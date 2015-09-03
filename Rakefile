@@ -1,5 +1,5 @@
 require File.join(File.dirname(__FILE__), 'config/enviroment.rb')
-require File.join(File.dirname(__FILE__), 'lib/queue_manager.rb')
+require File.join(File.dirname(__FILE__), 'lib/broker.rb')
 
 namespace :db do
   desc "Migrate the database"
@@ -8,18 +8,12 @@ namespace :db do
   end
 end
 
-desc "different queue checks"
-namespace :check do
-  task :new_tasks do
-    manager = QueueManager.instance
-    puts manager.new_tasks?
-  end
-end
-
-namespace :do do
-  desc "start processing new tasks"
-  task :new do
-    manager = QueueManager.instance
-    manager.complete_new_tasks
+desc "server for tasks deployment"
+namespace :serve do
+  desc "simple serve for new tasks"
+  task :new, [:port] do |task, args|
+    args.with_defaults(port: 3000)
+    broker = Broker.instance
+    broker.start_serve args[:port]
   end
 end
