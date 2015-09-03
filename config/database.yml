@@ -1,0 +1,7 @@
+adapter: mysql2
+encoding: utf8
+database: queue_man
+pool: 5
+username: root
+password: toor
+host: localhost
