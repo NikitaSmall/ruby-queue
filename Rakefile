@@ -15,3 +15,11 @@ namespace :check do
     puts manager.new_tasks?
   end
 end
+
+namespace :do do
+  desc "start processing new tasks"
+  task :new do
+    manager = QueueManager.instance
+    manager.complete_new_tasks
+  end
+end

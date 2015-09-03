@@ -30,6 +30,3 @@ PLATFORMS
 DEPENDENCIES
   activerecord
   mysql2
-
-BUNDLED WITH
-   1.10.6
