@@ -5,12 +5,20 @@ require 'rspec'
 require 'rack/test'
 
 require 'active_record'
+require 'database_cleaner'
 
 RSpec.configure do |config|
-  # reset database before each example is run
-  ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
-  ActiveRecord::Migrator.migrate(File.join(File.dirname(__FILE__), '../db/migrate'), ENV['VERSION'] ? ENV['VERSION'].to_i : nil )
+  ActiveRecord::Base.establish_connection adapter: "sqlite3", database: "db/test.db"
+  ActiveRecord::Migrator.up(File.join(File.dirname(__FILE__), '../db/migrate'), ENV['VERSION'] ? ENV['VERSION'].to_i : nil )
 
-  config.before(:each) do
+  config.before(:suite) do
+    DatabaseCleaner.strategy = :deletion
+    DatabaseCleaner.clean_with(:truncation)
+  end
+
+  config.around(:each) do |example|
+    DatabaseCleaner.cleaning do
+      example.run
+    end
   end
 end

@@ -12,23 +12,24 @@ describe Broker do
 
       @thr = Thread.new do
         @broker = Broker.instance
-        @broker.start_serve(4000)
+        @broker.start_serve(5000)
       end
+
+      # @thr.run
     end
 
     after(:each) do
-      Thread.kill(@thr)
+      @thr.kill
     end
 
     it 'show a correct new task' do
-      s = TCPSocket.open('localhost', 4000)
+      s = TCPSocket.open('localhost', 5000)
 
       response = ""
       while line = s.gets
           response += line
       end
       s.close
-      p response
 
       expect(response).not_to eq("none")
       expect(response).not_to eq("none\n")
