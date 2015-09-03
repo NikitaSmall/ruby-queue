@@ -8,11 +8,9 @@ class Broker
 
   def start_serve(port)
     get_new_tasks
-    server = TCPServer.new port
-    i = 1
+    server = TCPServer.open port
 
-    loop do
-      client = server.accept
+    while client = server.accept      
       get_new_tasks if @tasks.empty?
 
       if @tasks.empty?
@@ -20,7 +18,6 @@ class Broker
       else
         give_task_to_client(client)
       end
-
 
       client.close
     end
