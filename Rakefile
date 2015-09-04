@@ -1,5 +1,6 @@
 require File.join(File.dirname(__FILE__), 'config/enviroment.rb')
 require File.join(File.dirname(__FILE__), 'lib/broker.rb')
+require File.join(File.dirname(__FILE__), 'lib/worker.rb')
 
 require 'rspec/core/rake_task'
 require 'dotenv/tasks'
@@ -31,5 +32,14 @@ namespace :serve do
     args.with_defaults(port: 3000)
     broker = Broker.instance
     broker.start_serve args[:port]
+  end
+end
+
+desc "namespace to start worker"
+namespace :worker do
+  desc "start to asking a server to get tasks"
+  task :start, [:host, :port] do |task, args|
+    args.with_defaults(host: 'localhost', port: 3000)
+    Worker.new args[:host], args[:port]
   end
 end
