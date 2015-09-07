@@ -48,19 +48,19 @@ class Worker
       log "recieved message: #{response}"
       response
     rescue => e
-      log "#{e.class}: '#{e.message}' - Error on recieving new message from server: #{@host}:#{@port}"
+      log "#{e.class}: '#{e.message}' - Error on recieving new message from server: #{@host}:#{@port}", :error
       nil # this will force worker to be idle for current loop
     end
   end
 
   def message_is_task?(message)
     # it will return nil if "none\n" is in response. So we will try to parse it
-    /^((?!none\n)).*$/ =~ message # message doesn't contain none with new_line symbols. So, it should be a message
+    !!(/^((?!none\n)).*$/ =~ message) # message doesn't contain none with new_line symbols. So, it should be a message
   end
 
   def parse(message)
     hash = JSON::parse(message)
-    @task = Task.find(hash["id"])
+    @task = Task.new(hash)
 
     log "task parsed : #{@task.to_s}"
   end
@@ -95,6 +95,9 @@ class Worker
     when :info
       @logger_to_file.info { message }
       @logger_to_console.info { message }
+    when :error
+      @logger_to_file.error { message }
+      @logger_to_console.error { message }
     else
       @logger_to_file.debug { message }
       @logger_to_console.debug { message }

@@ -1,19 +1,13 @@
 class Task < ActiveRecord::Base
   def doing
-    self.attempts += 1
-    self.status = "doing"
-    save
+    Task.update(id, attempts: attempts + 1, status: "doing")
   end
 
   def finished
-    self.status = "done"
-    save
+    Task.update(id, status: "done")
   end
 
   def failed(e)
-    self.status = "failed"
-    self.last_error = e.message
-    self.failed_at = Time.now
-    save
+    Task.update(id, status: "failed", last_error: e.message, failed_at: Time.now)
   end
 end

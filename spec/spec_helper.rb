@@ -7,7 +7,6 @@ require 'rack/test'
 require 'active_record'
 require 'database_cleaner'
 require 'factory_girl'
-require 'webmock/rspec'
 
 PORT = 6019
 logger = Logger.new('logs/logfile.log')
@@ -17,7 +16,6 @@ RSpec.configure do |config|
   ActiveRecord::Migrator.up(File.join(File.dirname(__FILE__), '../db/migrate'), ENV['VERSION'] ? ENV['VERSION'].to_i : nil )
 
   config.include FactoryGirl::Syntax::Methods
-  WebMock.disable_net_connect!
 
   config.before(:suite) do
     FactoryGirl.reload

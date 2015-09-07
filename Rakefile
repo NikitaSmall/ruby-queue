@@ -17,7 +17,6 @@ else
   end
 end
 
-
 namespace :db do
   desc "Migrate the database"
   task :migrate do

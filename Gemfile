@@ -8,7 +8,7 @@ gem 'retriable'
 gem 'dotenv'
 gem 'rake'
 
-gem 'webmock'
+gem 'rspec-mocks'
 gem 'factory_girl'
 gem 'database_cleaner'
 gem 'rspec', :require => 'spec'
