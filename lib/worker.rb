@@ -1,25 +1,26 @@
 require 'json'
 require 'socket'
 
+require 'retriable'
+
 require File.join(File.dirname(__FILE__), 'model/task.rb')
 
 class Worker
   attr_accessor :task, :host, :port
+  TIME_TO_IDLE = 10 # seconds wait for a new task or server restoring (if an error was occured)
 
   def initialize(host, port)
+    @task = nil
     @host = host
     @port = port
 
-    @logger = Logger.new('logs/logfile.log')
-
-    listen_for_task
+    @logger_to_file = Logger.new('logs/logfile.log')
+    @logger_to_console = Logger.new(STDERR)
   end
 
-  private
   def listen_for_task
-    @logger.info { "worker started" }
+    log "worker started"
     loop do
-      # TODO: implement task retry or new query to server logic
       message = ask_for_task
 
       if message_is_task? message
@@ -32,35 +33,42 @@ class Worker
     end
   end
 
-  # TODO: implement checking of host availity
+  private
   def ask_for_task
-    @logger.info { "ask for task from server: #{@host}:#{@port}" }
-    s = TCPSocket.open(@host, @port)
+    begin
+      log "ask for task from server: #{@host}:#{@port}"
+      s = TCPSocket.open(@host, @port)
 
-    response = ""
-    while line = s.gets
-        response += line
+      response = ""
+      while line = s.gets
+          response += line
+      end
+      s.close
+
+      log "recieved message: #{response}"
+      response
+    rescue => e
+      log "#{e.class}: '#{e.message}' - Error on recieving new message from server: #{@host}:#{@port}"
+      nil # this will force worker to be idle for current loop
     end
-    s.close
-
-    @logger.info { "recieved message: #{response}" }
-    response
   end
 
   def message_is_task?(message)
-    /^((?!none\n)).*$/ =~ message # message doen't contain none with new_line symbols. So, it should be a message
+    # it will return nil if "none\n" is in response. So we will try to parse it
+    /^((?!none\n)).*$/ =~ message # message doesn't contain none with new_line symbols. So, it should be a message
   end
 
   def parse(message)
     hash = JSON::parse(message)
     @task = Task.find(hash["id"])
 
-    @logger.info { "task parsed : #{@task.to_s}" }
+    log "task parsed : #{@task.to_s}"
   end
 
   def processing
     raise 'Not a task found' unless @task.is_a? Task
-    @logger.info { "processing started" }
+    log "processing started"
+    @task.doing
 
     # TODO: implement processing
     sleep(5)
@@ -69,16 +77,27 @@ class Worker
   end
 
   def done_work
-    @logger.info { "task is complete" }
+    log "task is complete"
 
     @task.finished
     @task = nil
   end
 
   def wait_for_task
-    @logger.info { "worker is idle" }
+    log "worker is idle"
 
     # TODO: implement more complex logic
-    sleep(10)
+    sleep(TIME_TO_IDLE)
+  end
+
+  def log(message, level = :info)
+    case level
+    when :info
+      @logger_to_file.info { message }
+      @logger_to_console.info { message }
+    else
+      @logger_to_file.debug { message }
+      @logger_to_console.debug { message }
+    end
   end
 end

@@ -15,19 +15,25 @@ class Broker
     server = TCPServer.new port
 
     loop do
-      Thread.start(server.accept) do |client|
-        semaphore.synchronize do
-          get_new_tasks if @tasks.empty?
+      begin
+        Thread.start(server.accept_nonblock) do |client|
+          semaphore.synchronize do
+            get_new_tasks if @tasks.empty?
 
-          if @tasks.empty?
-            say_none(client)
-          else
-            give_task_to_client(client)
+            if @tasks.empty?
+              say_none(client)
+            else
+              give_task_to_client(client)
+            end
+
+            client.close
           end
-
-          client.close
         end
+      rescue IO::WaitReadable, Errno::EINTR
+        IO.select([server])
+        retry
       end
+
     end
   end
 

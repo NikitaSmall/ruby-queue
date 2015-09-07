@@ -40,6 +40,6 @@ namespace :worker do
   desc "start to asking a server to get tasks"
   task :start, [:host, :port] do |task, args|
     args.with_defaults(host: 'localhost', port: 3000)
-    Worker.new args[:host], args[:port]
+    Worker.new(args[:host], args[:port]).listen_for_task
   end
 end
