@@ -4,7 +4,7 @@ require File.join(File.dirname(__FILE__), '../lib/worker.rb')
 describe Worker do
   describe '.new' do
     it 'should be created without task' do
-      @worker = Worker.new('localhost', 5000)
+      @worker = Worker.new('localhost', PORT)
 
       expect(@worker.task).to be(nil)
     end
@@ -12,7 +12,7 @@ describe Worker do
 
   describe '#parse' do
     before(:each) do
-      @worker = Worker.new('localhost', 5000)
+      @worker = Worker.new('localhost', PORT)
       create(:task, id: 3)
     end
 
@@ -29,7 +29,7 @@ describe Worker do
 
   describe '#message_is_task?' do
     before(:each) do
-      @worker = Worker.new('localhost', 5000)
+      @worker = Worker.new('localhost', PORT)
     end
 
     it 'takes correct a json string from the server' do
@@ -38,6 +38,13 @@ describe Worker do
 
       expect(message).to be_a(String)
       expect(@worker.send(:message_is_task?, message)).to be(true)
+    end
+
+    it 'checks nil/error messages correctly' do
+      allow(@worker).to receive(:ask_for_task).and_return(nil)
+      message = @worker.send(:ask_for_task)
+
+      expect(@worker.send(:message_is_task?, message)).to be(false)
     end
 
     it 'checks "none\n" message correctly' do

@@ -13,7 +13,6 @@ class Broker
 
     get_new_tasks
     server = TCPServer.new port
-
     loop do
       begin
         Thread.start(server.accept_nonblock) do |client|

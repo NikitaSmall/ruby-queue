@@ -2,7 +2,6 @@ require File.join(File.dirname(__FILE__), 'spec_helper.rb')
 require File.join(File.dirname(__FILE__), '../lib/broker.rb')
 require 'socket'
 
-
 describe Broker do
   describe '#give_task' do
     before(:each) do

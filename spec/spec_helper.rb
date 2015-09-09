@@ -8,11 +8,11 @@ require 'active_record'
 require 'database_cleaner'
 require 'factory_girl'
 
-PORT = 6019
+PORT = 7018
 logger = Logger.new('logs/logfile.log')
 
 RSpec.configure do |config|
-  ActiveRecord::Base.establish_connection adapter: "sqlite3", database: "db/test.db"
+  ActiveRecord::Base.establish_connection adapter: "postgresql", database: "queue_test", username: "root", password: "toor", host: 'localhost'
   ActiveRecord::Migrator.up(File.join(File.dirname(__FILE__), '../db/migrate'), ENV['VERSION'] ? ENV['VERSION'].to_i : nil )
 
   config.include FactoryGirl::Syntax::Methods
@@ -20,26 +20,29 @@ RSpec.configure do |config|
   config.before(:suite) do
     FactoryGirl.reload
     FactoryGirl.lint
-    DatabaseCleaner.strategy = :deletion
+    DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
   end
 
   config.before(:suite) do
     @thr = Thread.new do
       logger.debug { "starting new thread to serve the connections" }
+
       @broker = Broker.instance
       @broker.start_serve(PORT)
     end
 
     @thr.run
+    # @thr.join
   end
 
   config.after(:suite) do
     logger.debug { "closing new thread" }
-    @thr.kill
+    Thread.kill(@thr)
   end
 
   config.around(:each) do |example|
+
     DatabaseCleaner.cleaning do
       logger.debug { "run the example: it #{example.description}" }
       example.run
