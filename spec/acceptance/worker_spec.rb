@@ -2,6 +2,14 @@ require File.join(File.dirname(__FILE__), '../spec_helper.rb')
 require File.join(File.dirname(__FILE__), '../../lib/worker.rb')
 require 'socket'
 
+def create_task(options)
+  thr = Thread.new do
+    create(:task, options)
+  end
+  thr.join
+  thr.kill
+end
+
 describe Worker do
   describe '#ask_for_task' do
     before(:each) do
@@ -19,11 +27,8 @@ describe Worker do
     end
 
     it 'represents correct serialized task' do
-      thr = Thread.new do
-        create(:task, handler: 'devider')
-      end
-      thr.join
-      thr.kill
+      create_task(handler: 'devider')
+      
       message = @worker.send(:ask_for_task)
       @worker.send(:parse, message)
 
