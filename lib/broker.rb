@@ -40,7 +40,7 @@ class Broker
 
   private
   def get_new_tasks
-    # working with default and mistuped channels
+    # working with default and mistyped channels
     @tasks = Task.where(status: 'new').where('channel NOT IN (?) OR channel IS NULL', @channels.keys).limit(3).to_a
     # working with each channel from preferences
     @channels.each_pair do |channel_name, channel|

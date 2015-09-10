@@ -8,6 +8,8 @@ gem 'retriable'
 gem 'dotenv'
 gem 'rake'
 
+gem 'pidfile'
+
 gem 'simplecov', :require => false
 gem 'rspec-mocks'
 gem 'factory_girl'
