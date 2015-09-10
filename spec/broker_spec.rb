@@ -3,9 +3,45 @@ require File.join(File.dirname(__FILE__), '../lib/broker.rb')
 require 'socket'
 
 describe Broker do
+  before(:each) do
+    @br = Broker.instance
+  end
+
+  describe '#get_new_tasks' do
+    it 'takes tasks according to channels config: doesn\'t take at all' do
+      create(:task, argument: '{"a":12,"b":22}', channel: 'closed_channel')
+      create(:task, argument: '{"a":22,"b":22}', channel: 'closed_channel')
+
+      @br.send(:get_new_tasks)
+
+      expect(@br.tasks.count).to eq(0)
+    end
+
+    it 'takes tasks according to channels config: takes only few of them' do
+      create(:task, argument: '{"a":12,"b":22}', channel: 'bad_channel')
+      create(:task, argument: '{"a":22,"b":22}', channel: 'bad_channel')
+      create(:task, argument: '{"a":32,"b":22}', channel: 'bad_channel')
+
+      @br.send(:get_new_tasks)
+
+      expect(@br.tasks.count).to eq(1)
+      expect(@br.tasks[0]).to eq(Task.first)
+    end
+
+    it 'takes tasks according to channels config: takes only few of them' do
+      create(:task, argument: '{"a":12,"b":22}', channel: 'channel_two')
+      create(:task, argument: '{"a":22,"b":22}', channel: 'channel_two')
+      create(:task, argument: '{"a":32,"b":22}', channel: 'channel_two')
+
+      @br.send(:get_new_tasks)
+
+      expect(@br.tasks.count).to eq(3)
+    end
+  end
+
   describe '#give_task' do
     before(:each) do
-      create(:task)
+      create(:task, argument: '{"a":12,"b":22}')
       create(:task, argument: '{"a":20,"b":22}')
       @task = create(:task, handler: 'devider', argument: '{"a":20,"b":32}')
     end

@@ -1,0 +1,8 @@
+channel_one:
+  rps: 10
+channel_two:
+  rps: 3
+closed_channel:
+  rps: 0
+bad_channel:
+  rps: 1

@@ -36,7 +36,7 @@ describe Broker do
     end
 
     it 'shows serialized new task when it appears' do
-      create_task(handler: 'devider')
+      create_task(handler: 'devider', channel: 'some strange chanel')
 
       message = take_response_from_server(PORT)
       expect(message).not_to eq("none\n")

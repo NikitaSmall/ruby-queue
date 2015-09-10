@@ -61,7 +61,7 @@ describe Worker do
     end
 
     it 'fires error on process for an invalid task' do
-      create_task(handler: 'devider', argument: '{a: "12", b: "0"}')
+      create_task(handler: 'devider', argument: '{"a": 20, "b": 0}')
       message = @worker.send(:ask_for_task)
 
       @worker.send(:parse, message)
