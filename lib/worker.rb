@@ -70,7 +70,6 @@ class Worker
 
   def processing
     log "processing started"
-    @task.doing
 
     # start doing the task with handler
     begin
@@ -82,6 +81,7 @@ class Worker
     rescue => e
       log "#{e.class}: '#{e.message}' - Error on task processing. Handler: #{@task.handler}; Arguments: #{@task.argument}", :error
       @task.failed(e)
+      @task = nil
       return # can't do something with this task after retries. So, it moves to next task
     end
 

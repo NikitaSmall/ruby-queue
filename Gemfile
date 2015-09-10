@@ -8,6 +8,7 @@ gem 'retriable'
 gem 'dotenv'
 gem 'rake'
 
+gem 'simplecov', :require => false
 gem 'rspec-mocks'
 gem 'factory_girl'
 gem 'database_cleaner'

@@ -28,11 +28,47 @@ describe Worker do
 
     it 'represents correct serialized task' do
       create_task(handler: 'devider')
-      
+
       message = @worker.send(:ask_for_task)
       @worker.send(:parse, message)
 
       expect(@worker.task.id).to eq(Task.last.id)
+    end
+
+    it 'fires an error when connection refuse' do
+      @worker.port += 1
+
+      message = @worker.send(:ask_for_task)
+      expect(message).to be(nil)
+    end
+  end
+
+  describe '#processing' do
+    before(:each) do
+      DatabaseCleaner.strategy = :truncation
+      @worker = Worker.new('localhost', PORT)
+    end
+
+    it 'correctly process for a correct task' do
+      create_task(handler: 'devider')
+      message = @worker.send(:ask_for_task)
+
+      @worker.send(:parse, message)
+      @worker.send(:processing)
+
+      expect(@worker.task).to eq(nil)
+      expect(Task.last.status).to eq('done')
+    end
+
+    it 'fires error on process for an invalid task' do
+      create_task(handler: 'devider', argument: '{a: "12", b: "0"}')
+      message = @worker.send(:ask_for_task)
+
+      @worker.send(:parse, message)
+      @worker.send(:processing)
+
+      expect(@worker.task).to eq(nil)
+      expect(Task.last.status).to eq('failed')
     end
   end
 end
