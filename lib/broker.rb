@@ -20,15 +20,17 @@ class Broker
         Thread.start(server.accept_nonblock) do |client|
           semaphore.synchronize do
             get_new_tasks if @tasks.empty?
+          end
 
-            if @tasks.empty?
-              say_none(client)
-            else
+          if @tasks.empty?
+            say_none(client)
+          else
+            semaphore.synchronize do
               give_task_to_client(client)
             end
-
-            client.close
           end
+
+          client.close
         end
       rescue IO::WaitReadable, Errno::EINTR
         IO.select([server])
@@ -47,7 +49,7 @@ class Broker
       sql += ' UNION '
       sql += '(' + Task.where(status: 'new', channel: channel_name).limit(channel['rps']).to_sql + ')'
     end
-    @tasks = Task.find_by_sql(sql)
+    @tasks = Task.find_by_sql(sql).shuffle
   end
 
   def give_task
