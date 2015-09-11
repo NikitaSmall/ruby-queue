@@ -41,11 +41,13 @@ class Broker
   private
   def get_new_tasks
     # working with default and mistyped channels
-    @tasks = Task.where(status: 'new').where('channel NOT IN (?) OR channel IS NULL', @channels.keys).limit(3).to_a
+    sql = '(' + Task.where(status: 'new').where('channel NOT IN (?) OR channel IS NULL', @channels.keys).limit(3).to_sql + ')'
     # working with each channel from preferences
     @channels.each_pair do |channel_name, channel|
-      @tasks += Task.where(status: 'new', channel: channel_name).limit(channel['rps']).to_a
+      sql += ' UNION '
+      sql += '(' + Task.where(status: 'new', channel: channel_name).limit(channel['rps']).to_sql + ')'
     end
+    @tasks = Task.find_by_sql(sql)
   end
 
   def give_task

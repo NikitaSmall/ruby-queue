@@ -42,8 +42,9 @@ describe Broker do
   describe '#give_task' do
     before(:each) do
       create(:task, argument: '{"a":12,"b":22}')
-      create(:task, argument: '{"a":20,"b":22}')
       @task = create(:task, handler: 'devider', argument: '{"a":20,"b":32}')
+      create(:task, argument: '{"a":20,"b":22}')
+
     end
 
     it 'shows a correct new task' do
@@ -56,15 +57,6 @@ describe Broker do
       expect(new_task).not_to eq("none\n")
       expect(new_task).not_to eq("")
       expect(new_task).not_to eq(nil)
-    end
-
-    it 'always shows last added task' do
-      broker = Broker.instance
-
-      broker.send(:get_new_tasks)
-      new_task = JSON::parse(broker.send(:give_task))
-
-      expect(@task).to eq (Task.find(new_task["id"]))
     end
 
     it 'counts tasks correctly' do
