@@ -8,6 +8,20 @@ describe Broker do
   end
 
   describe '#get_new_tasks' do
+    it 'serves tasks in different position each time' do
+      create(:task, argument: '{"a":12,"b":22}', channel: 'channel_two')
+      create(:task, argument: '{"a":22,"b":22}', channel: 'channel_two')
+      create(:task, argument: '{"a":32,"b":22}', channel: 'channel_two')
+      create(:task, argument: '{"a":12,"b":22}', channel: 'bad_channel')
+
+      @br.send(:get_new_tasks)
+      tasks_sequence_one = @br.tasks
+
+      @br.send(:get_new_tasks)
+      tasks_sequence_two = @br.tasks
+      expect(tasks_sequence_one).not_to eq(tasks_sequence_two)
+    end
+
     it 'takes tasks according to channels config: doesn\'t take at all' do
       create(:task, argument: '{"a":12,"b":22}', channel: 'closed_channel')
       create(:task, argument: '{"a":22,"b":22}', channel: 'closed_channel')
