@@ -1,7 +1,7 @@
-adapter: mysql2
+adapter: postgresql
 encoding: utf8
-database: queue_man
+database: queue_dev
 pool: 5
-username: root
-password: toor
+username: rails
+password: rails
 host: localhost
