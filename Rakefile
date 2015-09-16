@@ -29,7 +29,7 @@ desc "server for tasks deployment"
 namespace :serve do
   desc "simple serve for new tasks"
   task :new, [:port] do |task, args|
-    pidfile = PidFile.new
+    pidfile = PidFile.new(piddir: '/var/lock/', pidfile: 'broker_serve.pid')
 
     args.with_defaults(port: 3000)
     broker = Broker.instance
