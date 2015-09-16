@@ -7,15 +7,19 @@ require File.join(File.dirname(__FILE__), 'model/task.rb')
 
 class Broker
   include Singleton
-  attr_reader :tasks
+  attr_reader :tasks, :serving
 
   DEFAULT_RPS_LIMIT = 3
+
+  def initialize
+    @serving = true
+  end
 
   def start_serve(port)
     get_new_tasks
 
     server = TCPServer.new port
-    while serving do
+    while @serving do
       ["INT", "TERM"].each { |signal| trap(signal) { stop_serving } }
       begin
         Thread.start(server.accept_nonblock) do |client|
@@ -42,11 +46,6 @@ class Broker
   end
 
   private
-  def serving
-    @serving = true if @serving.nil?
-    @serving
-  end
-
   def stop_serving
     @serving = false
   end
