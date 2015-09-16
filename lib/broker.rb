@@ -13,30 +13,27 @@ class Broker
 
   def start_serve(port)
     get_new_tasks
+    work = true
 
     server = TCPServer.new port
-    loop do
+    while work do
+      trap("INT") { work = false }
+      trap("TERM") { work = false }
       begin
         Thread.start(server.accept_nonblock) do |client|
-          Thread.handle_interrupt(RuntimeError => :on_blocking) do
+          semaphore.synchronize do
+            get_new_tasks if @tasks.empty?
+          end
 
+          if @tasks.empty?
+            say_none(client)
+          else
             semaphore.synchronize do
-              get_new_tasks if @tasks.empty?
-            end
-
-            if @tasks.empty?
-              say_none(client)
-            else
-              semaphore.synchronize do
-                give_task_to_client(client)
-              end
-            end
-
-            client.close
-            if Thread.pending_interrupt? # we are done with this client - shut down the thread and exit
-              Thread.handle_interrupt(Object => :immediate){}
+              give_task_to_client(client)
             end
           end
+
+          client.close
         end
       rescue IO::WaitReadable, Errno::EINTR
         IO.select([server])

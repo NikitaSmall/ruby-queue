@@ -39,7 +39,7 @@ describe Broker do
       @br.send(:get_new_tasks)
 
       expect(@br.tasks.count).to eq(1)
-      expect(@br.tasks[0]).to eq(Task.first)
+      expect(@br.tasks[0]).to eq(Task.last)
     end
 
     it 'takes tasks according to channels config: takes only few of them' do

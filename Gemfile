@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'mysql2'
-gem 'pg'
+gem 'mysql2', platform: :ruby
+gem 'pg', platform: :ruby
 gem 'activerecord'
 
 gem 'retriable'

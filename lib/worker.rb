@@ -62,15 +62,19 @@ class Worker
   end
 
   def parse(message)
-    hash = JSON::parse(message)
-    @task = Task.new(hash)
+    begin
+      hash = JSON::parse(message)
+      @task = Task.new(hash)
 
-    log "task parsed : #{@task.to_s}", :debug
+      log "task parsed : #{@task.to_s}", :debug
+    rescue => e
+      log "#{e.class}: '#{e.message}' - Error on task parsing. Message is: #{message}", :error
+    end
   end
 
   def processing
     log "processing started"
-
+    return unless @task.is_a? Task
     # start doing the task with handler
     begin
       Retriable.retriable do
