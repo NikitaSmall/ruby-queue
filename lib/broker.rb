@@ -18,19 +18,25 @@ class Broker
     loop do
       begin
         Thread.start(server.accept_nonblock) do |client|
-          semaphore.synchronize do
-            get_new_tasks if @tasks.empty?
-          end
+          Thread.handle_interrupt(RuntimeError => :on_blocking) do
 
-          if @tasks.empty?
-            say_none(client)
-          else
             semaphore.synchronize do
-              give_task_to_client(client)
+              get_new_tasks if @tasks.empty?
+            end
+
+            if @tasks.empty?
+              say_none(client)
+            else
+              semaphore.synchronize do
+                give_task_to_client(client)
+              end
+            end
+
+            client.close
+            if Thread.pending_interrupt? # we are done with this client - shut down the thread and exit
+              Thread.handle_interrupt(Object => :immediate){}
             end
           end
-
-          client.close
         end
       rescue IO::WaitReadable, Errno::EINTR
         IO.select([server])

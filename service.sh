@@ -30,7 +30,7 @@ start() {
 
   #su -c "$CMD" $RUNAS > "$PIDFILE"
 
- bundle exec rake serve:new &
+  bundle exec rake serve:new &
 
   echo 'Service started' >&2
 }
