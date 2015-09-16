@@ -6,9 +6,6 @@ require 'pidfile'
 require 'rspec/core/rake_task'
 require 'dotenv/tasks'
 
-trap("INT") { puts "Shutting down."; exit}
-trap("TERM") { puts "Shutting down."; exit}
-
 task :default => :test
 task :test => :spec
 

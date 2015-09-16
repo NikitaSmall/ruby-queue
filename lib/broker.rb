@@ -13,12 +13,10 @@ class Broker
 
   def start_serve(port)
     get_new_tasks
-    work = true
 
     server = TCPServer.new port
-    while work do
-      trap("INT") { work = false }
-      trap("TERM") { work = false }
+    while serving do
+      ["INT", "TERM"].each { |signal| trap(signal) { stop_serving } }
       begin
         Thread.start(server.accept_nonblock) do |client|
           semaphore.synchronize do
@@ -44,6 +42,15 @@ class Broker
   end
 
   private
+  def serving
+    @serving = true if @serving.nil?
+    @serving
+  end
+
+  def stop_serving
+    @serving = false
+  end
+
   def get_new_tasks
     # working with default and mistyped channels
     sql = '(' + Task.where(status: 'new').where('channel NOT IN (?) OR channel IS NULL', channels.keys).limit(default_rps_limit).to_sql + ')'
