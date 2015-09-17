@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'active_record'
+# require 'activerecord-jdbcpostgresql-adapter' if defined? JRUBY_VERSION
 require 'yaml'
 
 # require 'logger'

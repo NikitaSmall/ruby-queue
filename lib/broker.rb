@@ -22,7 +22,8 @@ class Broker
     while @serving do
       ["INT", "TERM"].each { |signal| trap(signal) { stop_serving } }
       begin
-        Thread.start(server.accept_nonblock) do |client|
+        # Thread.start(server.accept_nonblock) do |client|
+        Thread.start(server.accept) do |client|
           semaphore.synchronize do
             get_new_tasks if @tasks.empty?
           end

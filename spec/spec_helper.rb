@@ -11,7 +11,7 @@ require 'active_record'
 require 'database_cleaner'
 require 'factory_girl'
 
-PORT = 7003
+PORT = 7010
 logger = Logger.new('logs/logfile.log')
 
 RSpec.configure do |config|

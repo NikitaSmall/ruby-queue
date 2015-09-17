@@ -1,6 +1,7 @@
 require 'json'
 require 'socket'
 
+require 'celluloid/current'
 require 'retriable'
 
 require File.join(File.dirname(__FILE__), 'model/task.rb')
@@ -9,6 +10,7 @@ require File.join(File.dirname(__FILE__), 'handlers/summ.rb')
 require File.join(File.dirname(__FILE__), 'handlers/divider.rb')
 
 class Worker
+  # include Celluloid
   attr_accessor :task, :host, :port
   TIME_TO_IDLE = 10 # seconds wait for a new task or server restoring (if an error was occured)
 
@@ -64,11 +66,11 @@ class Worker
   def parse(message)
     begin
       hash = JSON::parse(message)
-      @task = Task.new(hash)
+      @task = ::Task.new(hash)
 
       log "task parsed : #{@task.to_s}", :debug
     rescue => e
-      log "#{e.class}: '#{e.message}' - Error on task parsing. Message is: #{message}", :error
+      log "#{e.class}: '#{e.message}' - Error on task parsing/task saving. Parsed hash is: #{hash}", :error
     end
   end
 
@@ -80,7 +82,10 @@ class Worker
       Retriable.retriable do
         options = JSON::load(@task.argument) # expect that arguments stored as json hash
         handler = @task.handler.split("_").collect(&:capitalize).join
-        Handlers.const_get(handler).new(options).run
+
+        pool = Handlers.const_get(handler).pool
+        pool.run(options
+        )
       end
     rescue => e
       log "#{e.class}: '#{e.message}' - Error on task processing. Handler: #{@task.handler}; Arguments: #{@task.argument}", :error

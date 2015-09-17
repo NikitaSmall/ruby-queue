@@ -1,21 +1,15 @@
+require 'celluloid/current'
+
 module Handlers
   class Devider
-    attr_accessor :a, :b
+    include Celluloid
 
-    def initialize(options)
-      @a = options["a"]
-      @b = options["b"]
+    def devide(a, b)
+      a / b
     end
 
-    def devide
-      begin
-      rescue => e
-      end
-      @a / @b
-    end
-
-    def run
-      puts devide
+    def run(options)
+      puts devide(options["a"], options["b"])
     end
   end
 end

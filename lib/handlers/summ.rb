@@ -1,18 +1,15 @@
+require 'celluloid/current'
+
 module Handlers
   class Summ
-    attr_accessor :a, :b
+    include Celluloid
 
-    def initialize(options)
-      @a = options["a"]
-      @b = options["b"]
+    def summ(a, b)
+      a + b
     end
 
-    def sum
-      @a + @b
-    end
-
-    def run
-      puts sum
+    def run(options)
+      puts summ(options["a"], options["b"])
     end
   end
 end

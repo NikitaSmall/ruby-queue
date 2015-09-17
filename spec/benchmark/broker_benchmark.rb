@@ -8,7 +8,7 @@ def take_response_from_server(port)
 
   response = ""
   while line = s.gets
-      response += line
+    response += line
   end
   s.close
   response
