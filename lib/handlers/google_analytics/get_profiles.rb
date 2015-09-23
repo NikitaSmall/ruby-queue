@@ -10,7 +10,7 @@ module Handlers
         profiles = user.profiles(JSON::parse(options["webproperties"]) )
         options["profiles"] = profiles.to_json
 
-        create_task_process_result(options, task.materialized_path)
+        create_task_process_result(options, task.new_materialized_path)
       end
 
       private

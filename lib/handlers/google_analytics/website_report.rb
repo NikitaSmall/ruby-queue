@@ -10,7 +10,7 @@ module Handlers
         webproperties = user.webproperties
         options["webproperties"] = webproperties.to_json
 
-        create_task_get_profiles(options, task.materialized_path)
+        create_task_get_profiles(options, task.new_materialized_path)
       end
 
       private

@@ -21,6 +21,10 @@ class Task < ActiveRecord::Base
     @channel_config
   end
 
+  def new_materialized_path
+    materialized_path + [id]
+  end
+
   private
   def parse_config
     configs = YAML::load(File.open(File.join(File.dirname(__FILE__), '../../config/channels.yml')))
@@ -39,7 +43,6 @@ class Task < ActiveRecord::Base
 
   def serve_materialized_path
     update_parents
-    insert_in_materialized_path
   end
 
   def update_parents_for_done_tasks
@@ -59,10 +62,5 @@ class Task < ActiveRecord::Base
       task.processing_sub_task += 1
       task.save
     end
-  end
-
-  def insert_in_materialized_path
-    self.materialized_path << id
-    save
   end
 end
