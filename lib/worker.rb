@@ -7,13 +7,13 @@ require 'retriable'
 require File.join(File.dirname(__FILE__), 'model/task.rb')
 require File.join(File.dirname(__FILE__), 'model/darkwing_stubs.rb')
 
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/google_analytics_website_report.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/website_report.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/get_profiles.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/process_result.rb')
 
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/analytics_websites_report.rb')
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/user.rb')
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/ga_errors.rb')
+require File.join(File.dirname(__FILE__), 'handlers/user.rb')
+require File.join(File.dirname(__FILE__), 'handlers/ga_errors.rb')
 
 require File.join(File.dirname(__FILE__), 'handlers/api_factory.rb')
 

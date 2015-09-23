@@ -29,12 +29,12 @@ module Handlers
     private
     def get_webproperties
       api = ApiFactory.new.analytics_api(self)
-      AnalyticsWebsitesReport.new(api).fetch_webproperties
+      GoogleAnalytics::AnalyticsWebsitesReport.new(api).fetch_webproperties
     end
 
     def get_profiles(webproperties)
       api = ApiFactory.new.analytics_api(self)
-      AnalyticsWebsitesReport.new(api).fetch_profiles(webproperties)
+      GoogleAnalytics::AnalyticsWebsitesReport.new(api).fetch_profiles(webproperties)
     end
   end
 end

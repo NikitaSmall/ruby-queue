@@ -43,7 +43,7 @@ class CreateTasks < ActiveRecord::Migration
 
       # a way to check the parent of curent task
       # if we need to make reference to same table (tasks) we need to use self joins [http://guides.rubyonrails.org/association_basics.html#self-joins]
-      table.references :parent_task, index: true
+      # table.references :parent_task, index: true
 
       table.timestamps
     end

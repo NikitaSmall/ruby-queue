@@ -2,20 +2,20 @@ require 'celluloid/current'
 
 module Handlers
   module GoogleAnalytics
-    class GetProfiles
+    class WebsiteReport
       include Celluloid
 
       def run(options)
         user = get_user(options["user_id"])
-        profiles = user.profiles(JSON::parse(options["webproperties"]) )
-        options["profiles"] = profiles.to_json
+        webproperties = user.webproperties
+        options["webproperties"] = webproperties.to_json
 
-        create_task_process_result(options)
+        create_task_get_profiles(options)
       end
 
       private
-      def create_task_process_result(options)
-        ::Task.create(handler: 'GoogleAnalytics::ProcessResult', argument: options.to_json)
+      def create_task_get_profiles(options)
+        ::Task.create(handler: 'GoogleAnalytics::GetProfiles', argument: options.to_json)
       end
 
       def users
