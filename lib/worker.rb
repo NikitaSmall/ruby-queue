@@ -94,7 +94,7 @@ class Worker
         options = JSON::load(@task.argument) # expect that arguments stored as json hash
 
         pool = Handlers.const_get(@task.handler).pool
-        pool.run(options)
+        pool.run(options, @task.materialized_path)
       end
     rescue => e
       log "#{e.class}: '#{e.message}' - Error on task processing. Handler: #{@task.handler}; Arguments: #{@task.argument}", :error
@@ -104,23 +104,6 @@ class Worker
     end
 
     done_work
-  end
-
-  def get_google_analytics(options)
-    pool = GAMapper::AnalyticsMapper.pool
-    pool.get_data(options)
-  end
-
-  def get_dfp(options)
-    raise 'get_dfp is not yet implemented!'
-  end
-
-  def get_bing(options)
-    raise 'get_bing is not yet implemented!'
-  end
-
-  def get_adwords(options)
-    raise 'get_adwords is not yet implemented!'
   end
 
   def done_work

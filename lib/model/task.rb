@@ -1,6 +1,8 @@
 require 'yaml'
 
 class Task < ActiveRecord::Base
+  after_create :serve_materialized_path
+
   def doing
     Task.update(id, attempts: attempts + 1, status: "doing")
   end
@@ -27,5 +29,23 @@ class Task < ActiveRecord::Base
     else
       @channel_config = false
     end
+  end
+
+  def serve_materialized_path
+    update_parents
+    insert_in_materialized_path
+  end
+
+  def update_parents
+    materialized_path.each do |id|
+      task = Task.find(id)
+      task.processing_sub_task += 1
+      task.save
+    end
+  end
+
+  def insert_in_materialized_path
+    self.materialized_path << id
+    save
   end
 end

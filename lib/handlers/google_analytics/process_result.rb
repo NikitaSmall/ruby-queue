@@ -5,19 +5,19 @@ module Handlers
     class ProcessResult
       include Celluloid
 
-      def run(options)
+      def run(options, materialized_path)
         profiles = JSON::parse options["profiles"]
         profiles.each do |profile|
           mapper_args = ["analytics", "Website", options["user_id"], profile['id'], profile['name'], profile['industryVertical']]
           process_result mapper_args.join(REDUCER_KEY_DELIMITER)
         end
 
-        # create_task(options)
+        # create_task(options, materialized_path)
       end
 
       private
-      def create_task(options)
-        ::Task.create(handler: '', argument: options)
+      def create_task(options, materialized_path)
+        ::Task.create(handler: '', argument: options, materialized_path: materialized_path)
       end
 
       def process_result(key, *args)

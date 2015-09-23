@@ -5,17 +5,17 @@ module Handlers
     class WebsiteReport
       include Celluloid
 
-      def run(options)
+      def run(options, materialized_path)
         user = get_user(options["user_id"])
         webproperties = user.webproperties
         options["webproperties"] = webproperties.to_json
 
-        create_task_get_profiles(options)
+        create_task_get_profiles(options, materialized_path)
       end
 
       private
-      def create_task_get_profiles(options)
-        ::Task.create(handler: 'GoogleAnalytics::GetProfiles', argument: options.to_json)
+      def create_task_get_profiles(options, materialized_path)
+        ::Task.create(handler: 'GoogleAnalytics::GetProfiles', argument: options.to_json, materialized_path: materialized_path)
       end
 
       def users
