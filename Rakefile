@@ -23,6 +23,11 @@ namespace :db do
   task :migrate do
     ActiveRecord::Migrator.migrate('db/migrate', ENV['VERSION'] ? ENV['VERSION'].to_i : nil )
   end
+
+  desc 'Loads a schema.rb file into the database'
+    task :load do
+      load('db/schema.rb')
+    end
 end
 
 desc "server for tasks deployment"
@@ -44,4 +49,13 @@ namespace :worker do
     args.with_defaults(host: 'localhost', port: 3000)
     Worker.new(args[:host], args[:port]).listen_for_task
   end
+end
+
+task :do_it do
+  Dotenv.load
+  message = File.read(File.join(File.dirname(__FILE__), 'spec/support/test_user.json'))
+  w = Worker.new('localhost', 3000)
+  w.send(:parse, message)
+
+  w.send(:processing)
 end

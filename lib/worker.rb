@@ -5,9 +5,30 @@ require 'celluloid/current'
 require 'retriable'
 
 require File.join(File.dirname(__FILE__), 'model/task.rb')
+require File.join(File.dirname(__FILE__), 'model/darkwing_stubs.rb')
 
 require File.join(File.dirname(__FILE__), 'handlers/summ.rb')
 require File.join(File.dirname(__FILE__), 'handlers/divider.rb')
+require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/analytics_mapper.rb')
+
+require File.join(File.dirname(__FILE__), 'handlers/mappers/api_factory')
+require File.join(File.dirname(__FILE__), 'handlers/mappers/map_manager')
+require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/analytics_mapper')
+require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/report')
+require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/analytics_websites_report')
+require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/top_content_report')
+require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/top_referring_report')
+require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/traffic_metrics_report')
+require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/traffic_channels_report')
+require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/mobile_report')
+require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/location_report')
+require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/users_report')
+require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/api_response')
+
+require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/merged_report')
+require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/traffic_report')
+require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/mobile_and_referring_report')
+
 
 class Worker
   # include Celluloid
@@ -81,11 +102,23 @@ class Worker
     begin
       Retriable.retriable do
         options = JSON::load(@task.argument) # expect that arguments stored as json hash
-        handler = @task.handler.split("_").collect(&:capitalize).join
 
-        pool = Handlers.const_get(handler).pool
-        pool.run(options
-        )
+        case @task.handler
+          when 'analytics'
+            get_google_analytics options
+          when 'dfp'
+            get_dfp options
+          when 'bing'
+            get_bing options
+          when 'adwords'
+            get_adwords options
+          when 'echo'
+            data = options.shift+"\n"
+            STDERR.puts "Output: #{data}"
+            output data
+          else
+            raise Exception.new("unknown mapper #{mapper_name}")
+        end
       end
     rescue => e
       log "#{e.class}: '#{e.message}' - Error on task processing. Handler: #{@task.handler}; Arguments: #{@task.argument}", :error
@@ -95,6 +128,23 @@ class Worker
     end
 
     done_work
+  end
+
+  def get_google_analytics(options)
+    pool = GAMapper::AnalyticsMapper.pool
+    pool.get_data(options)
+  end
+
+  def get_dfp(options)
+    raise 'get_dfp is not yet implemented!'
+  end
+
+  def get_bing(options)
+    raise 'get_bing is not yet implemented!'
+  end
+
+  def get_adwords(options)
+    raise 'get_adwords is not yet implemented!'
   end
 
   def done_work
