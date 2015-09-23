@@ -7,28 +7,18 @@ require 'retriable'
 require File.join(File.dirname(__FILE__), 'model/task.rb')
 require File.join(File.dirname(__FILE__), 'model/darkwing_stubs.rb')
 
-require File.join(File.dirname(__FILE__), 'handlers/summ.rb')
-require File.join(File.dirname(__FILE__), 'handlers/divider.rb')
-require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/analytics_mapper.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/analytics_init.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/get_profiles_webproperties.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/get_profiles.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/process_result.rb')
 
-require File.join(File.dirname(__FILE__), 'handlers/mappers/api_factory')
-require File.join(File.dirname(__FILE__), 'handlers/mappers/map_manager')
-require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/analytics_mapper')
-require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/report')
-require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/analytics_websites_report')
-require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/top_content_report')
-require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/top_referring_report')
-require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/traffic_metrics_report')
-require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/traffic_channels_report')
-require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/mobile_report')
-require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/location_report')
-require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/users_report')
-require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/api_response')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/analytics_websites_report.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/user.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/ga_errors.rb')
+require File.join(File.dirname(__FILE__), 'handlers/api_factory.rb')
 
-require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/merged_report')
-require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/traffic_report')
-require File.join(File.dirname(__FILE__), 'handlers/mappers/google_analytics/mobile_and_referring_report')
-
+APP_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '../'))
+REDUCER_KEY_DELIMITER = '#_#_'
 
 class Worker
   # include Celluloid
@@ -103,22 +93,10 @@ class Worker
       Retriable.retriable do
         options = JSON::load(@task.argument) # expect that arguments stored as json hash
 
-        case @task.handler
-          when 'analytics'
-            get_google_analytics options
-          when 'dfp'
-            get_dfp options
-          when 'bing'
-            get_bing options
-          when 'adwords'
-            get_adwords options
-          when 'echo'
-            data = options.shift+"\n"
-            STDERR.puts "Output: #{data}"
-            output data
-          else
-            raise Exception.new("unknown mapper #{mapper_name}")
-        end
+        handler = @task.handler.split("_").collect(&:capitalize).join
+        handler += 'Init' if handler == 'Analytics'
+        pool = Handlers.const_get(handler).pool
+        pool.run(options)
       end
     rescue => e
       log "#{e.class}: '#{e.message}' - Error on task processing. Handler: #{@task.handler}; Arguments: #{@task.argument}", :error

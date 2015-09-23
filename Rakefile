@@ -5,6 +5,7 @@ require File.join(File.dirname(__FILE__), 'lib/worker.rb')
 require 'pidfile'
 require 'rspec/core/rake_task'
 require 'dotenv/tasks'
+require 'dotenv'
 
 task :default => :test
 task :test => :spec
@@ -53,7 +54,7 @@ end
 
 task :do_it do
   Dotenv.load
-  message = File.read(File.join(File.dirname(__FILE__), 'spec/support/test_user.json'))
+  message = Task.find(13).to_json
   w = Worker.new('localhost', 3000)
   w.send(:parse, message)
 
