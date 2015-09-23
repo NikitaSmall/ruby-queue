@@ -2,6 +2,7 @@ require 'yaml'
 
 class Task < ActiveRecord::Base
   after_create :serve_materialized_path
+  after_update :check_for_complete
 
   def doing
     Task.update(id, attempts: attempts + 1, status: "doing")
@@ -31,9 +32,25 @@ class Task < ActiveRecord::Base
     end
   end
 
+  def check_for_complete
+    update_parents_for_done_tasks
+    finished if status == 'doing' && done_sub_task == processing_sub_task
+  end
+
   def serve_materialized_path
     update_parents
     insert_in_materialized_path
+  end
+
+  def update_parents_for_done_tasks
+    if status == 'done'
+      materialized_path.each do |task_id|
+        next if id == task_id
+        task = Task.find(task_id)
+        task.done_sub_task += 1
+        task.save
+      end
+    end
   end
 
   def update_parents

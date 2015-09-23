@@ -94,7 +94,7 @@ class Worker
         options = JSON::load(@task.argument) # expect that arguments stored as json hash
 
         pool = Handlers.const_get(@task.handler).pool
-        pool.run(options, @task.materialized_path)
+        pool.run(options, @task)
       end
     rescue => e
       log "#{e.class}: '#{e.message}' - Error on task processing. Handler: #{@task.handler}; Arguments: #{@task.argument}", :error
@@ -109,7 +109,7 @@ class Worker
   def done_work
     log "task is complete"
 
-    @task.finished
+    # @task.finished
     @task = nil
   end
 

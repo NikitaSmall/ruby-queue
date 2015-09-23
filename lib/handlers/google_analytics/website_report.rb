@@ -5,12 +5,12 @@ module Handlers
     class WebsiteReport
       include Celluloid
 
-      def run(options, materialized_path)
+      def run(options, task)
         user = get_user(options["user_id"])
         webproperties = user.webproperties
         options["webproperties"] = webproperties.to_json
 
-        create_task_get_profiles(options, materialized_path)
+        create_task_get_profiles(options, task.materialized_path)
       end
 
       private

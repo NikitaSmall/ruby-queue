@@ -5,12 +5,12 @@ module Handlers
     class GetProfiles
       include Celluloid
 
-      def run(options, materialized_path)
+      def run(options, task)
         user = get_user(options["user_id"])
         profiles = user.profiles(JSON::parse(options["webproperties"]) )
         options["profiles"] = profiles.to_json
 
-        create_task_process_result(options, materialized_path)
+        create_task_process_result(options, task.materialized_path)
       end
 
       private
