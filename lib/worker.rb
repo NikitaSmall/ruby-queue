@@ -7,14 +7,14 @@ require 'retriable'
 require File.join(File.dirname(__FILE__), 'model/task.rb')
 require File.join(File.dirname(__FILE__), 'model/darkwing_stubs.rb')
 
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/analytics_init.rb')
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/get_profiles_webproperties.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/google_analytics_website_report.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/get_profiles.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/process_result.rb')
 
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/analytics_websites_report.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/user.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/ga_errors.rb')
+
 require File.join(File.dirname(__FILE__), 'handlers/api_factory.rb')
 
 APP_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '../'))
@@ -93,9 +93,7 @@ class Worker
       Retriable.retriable do
         options = JSON::load(@task.argument) # expect that arguments stored as json hash
 
-        handler = @task.handler.split("_").collect(&:capitalize).join
-        handler += 'Init' if handler == 'Analytics'
-        pool = Handlers.const_get(handler).pool
+        pool = Handlers.const_get(@task.handler).pool
         pool.run(options)
       end
     rescue => e

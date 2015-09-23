@@ -1,7 +1,7 @@
 require 'celluloid/current'
 
 module Handlers
-  class GetProfilesWebproperties
+  class GoogleAnalyticsWebsiteReport
     include Celluloid
 
     def run(options)
@@ -14,7 +14,7 @@ module Handlers
 
     private
     def create_task_get_profiles(options)
-      ::Task.create(handler: 'get_profiles', argument: options.to_json)
+      ::Task.create(handler: 'GetProfiles', argument: options.to_json)
     end
 
     def users
@@ -22,7 +22,7 @@ module Handlers
     end
 
     def get_user(user_id)
-      users[user_id] ||= GAMapper::User.new(user_id)
+      users[user_id] ||= Handlers::User.new(user_id)
     end
   end
 end

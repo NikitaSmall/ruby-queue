@@ -47,6 +47,8 @@ desc "namespace to start worker"
 namespace :worker do
   desc "start to asking a server to get tasks"
   task :start, [:host, :port] do |task, args|
+    Dotenv.load
+    
     args.with_defaults(host: 'localhost', port: 3000)
     Worker.new(args[:host], args[:port]).listen_for_task
   end
@@ -54,7 +56,7 @@ end
 
 task :do_it do
   Dotenv.load
-  message = Task.find(13).to_json
+  message = Task.find(9).to_json
   w = Worker.new('localhost', 3000)
   w.send(:parse, message)
 

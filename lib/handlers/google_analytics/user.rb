@@ -1,4 +1,4 @@
-module GAMapper
+module Handlers
   class User
     attr_accessor :analytics_access_token, :analytics_refresh_token, :analytics_token_issued_at, :darkwing_user_id
 

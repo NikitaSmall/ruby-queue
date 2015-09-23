@@ -1,4 +1,4 @@
-module GAMapper
+module Handlers
   class AnalyticsWebsitesReport
 
     INITIAL_TIMEOUT = 1
@@ -67,7 +67,7 @@ module GAMapper
       end
 
       if ga_error
-        raise ::GAMapper::MaxRetriesTimeoutError,
+        raise ::Handlers::MaxRetriesTimeoutError,
           "Report failed to return within the time limit set by max timeout (#{timeout}).\n
           headers: #{response.response_headers}\n body: response.body"
       end

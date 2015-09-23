@@ -1,4 +1,4 @@
-module GAMapper
+module Handlers
   class GaError < Exception
     def initialize(error)
       @error = error

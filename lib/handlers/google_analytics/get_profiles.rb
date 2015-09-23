@@ -14,7 +14,7 @@ module Handlers
 
     private
     def create_task_process_result(options)
-      ::Task.create(handler: 'process_result', argument: options.to_json)
+      ::Task.create(handler: 'ProcessResult', argument: options.to_json)
     end
 
     def users
@@ -22,7 +22,7 @@ module Handlers
     end
 
     def get_user(user_id)
-      users[user_id] ||= GAMapper::User.new(user_id)
+      users[user_id] ||= Handlers::User.new(user_id)
     end
   end
 end
