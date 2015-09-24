@@ -2,3 +2,4 @@ db/*.db
 logs/*.log
 .env
 coverage
+tmp/*

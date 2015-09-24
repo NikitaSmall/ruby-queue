@@ -37,30 +37,21 @@ class Task < ActiveRecord::Base
   end
 
   def check_for_complete
-    update_parents_for_done_tasks
-    finished if status == 'doing' && done_sub_task == processing_sub_task
+    #update_parents_for_done_tasks
+    #finished if status == 'doing' && done_sub_task == processing_sub_task && done_sub_task > 0
   end
 
   def serve_materialized_path
-    update_parents
+    update_parents_for_processing_tasks
   end
 
   def update_parents_for_done_tasks
     if status == 'done'
-      materialized_path.each do |task_id|
-        next if id == task_id
-        task = Task.find(task_id)
-        task.done_sub_task += 1
-        task.save
-      end
+      Task.increment_counter(:done_sub_task, materialized_path) unless materialized_path.empty?
     end
   end
 
-  def update_parents
-    materialized_path.each do |id|
-      task = Task.find(id)
-      task.processing_sub_task += 1
-      task.save
-    end
+  def update_parents_for_processing_tasks
+    Task.increment_counter(:processing_sub_task, materialized_path) unless materialized_path.empty?
   end
 end
