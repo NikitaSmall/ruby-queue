@@ -17,7 +17,14 @@ module Handlers
 
     private
     def save(model, value_to_save)
-      Object.const_get(model).create(value_to_save)
+      begin
+        Object.const_get(model).create(value_to_save)
+      rescue ActiveRecord::RecordNotUnique # it should be a Website model!
+        websites = Website.where(external_id: value_to_save.map { |website| website["external_id"] }).to_a
+        websites.each do |website|
+          Website.update(website.id, value_to_save.select { |val| val["external_id"].to_i == website.external_id }.first)
+        end
+      end
     end
 
     def create_task_save_results(options, materialized_path)
