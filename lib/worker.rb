@@ -13,6 +13,7 @@ require File.join(File.dirname(__FILE__), 'handlers/google_analytics/process_res
 
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/analytics_websites_report.rb')
 require File.join(File.dirname(__FILE__), 'handlers/user.rb')
+require File.join(File.dirname(__FILE__), 'handlers/save_result.rb')
 require File.join(File.dirname(__FILE__), 'handlers/ga_errors.rb')
 
 require File.join(File.dirname(__FILE__), 'handlers/api_factory.rb')

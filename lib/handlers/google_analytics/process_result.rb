@@ -7,43 +7,22 @@ module Handlers
 
       def run(options, task)
         profiles = JSON::parse options["profiles"]
+
+        value_to_save = []
         profiles.each do |profile|
-          mapper_args = ["analytics", "Website", options["user_id"], profile['id'], profile['name'], profile['industryVertical']]
-          process_result mapper_args.join(REDUCER_KEY_DELIMITER)
+          value_to_save << { "name" => profile["name"], "external_id" => profile['id'], "industry" => profile['industryVertical'] }
         end
 
-        # create_task(options, task.materialized_path)
-        task.finished
+        options["value_to_save"] = value_to_save.to_json
+        options["model"] = 'Website'
+
+        create_task(options, task.new_materialized_path) # save websites to database
+        # task.finished
       end
 
       private
       def create_task(options, materialized_path)
-        ::Task.create(handler: '', argument: options, materialized_path: materialized_path)
-      end
-
-      def process_result(key, *args)
-        # HOTFIX Only GA mappers generate correct keys
-        # all other mappers use reducer type as key and in result of this all data handled by one reducer
-        # We generate random reduce keys any mappers except analytics to spread input between reducers
-        unless key.starts_with? 'analytics'
-          key = [key, rand(100)].join(REDUCER_KEY_DELIMITER)
-        end
-        # MapReduce use tabulation as key/value separator, so, we need to escape it
-        out = "#{key.gsub("\t", "\\t")}\t"
-        out << args.to_csv.strip if args.any?
-        out << "\n"
-
-        log(out)
-
-        output out
-      end
-
-      def log(out)
-        STDERR.puts "Output: #{out}"
-      end
-
-      def output(out)
-        $stdout << out
+        ::Task.create(handler: 'SaveResult', argument: options.to_json, materialized_path: materialized_path)
       end
     end
   end
