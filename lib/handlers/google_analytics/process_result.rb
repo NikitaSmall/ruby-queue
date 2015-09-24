@@ -16,12 +16,12 @@ module Handlers
         options["value_to_save"] = value_to_save.to_json
         options["model"] = 'Website'
 
-        create_task(options, task.new_materialized_path) # save websites to database
+        create_task_save_results(options, task.new_materialized_path) # save websites to database
         # task.finished
       end
 
       private
-      def create_task(options, materialized_path)
+      def create_task_save_results(options, materialized_path)
         ::Task.create(handler: 'SaveResult', argument: options.to_json, materialized_path: materialized_path)
       end
     end
