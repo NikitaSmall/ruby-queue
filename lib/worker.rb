@@ -9,7 +9,12 @@ require File.join(File.dirname(__FILE__), 'model/darkwing_stubs.rb')
 
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/website.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/api_client.rb')
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/get_profiles.rb')
+
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/profiles_request_preparer.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/webproperties_request_preparer.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/profiles_parser.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/webproperties_parser.rb')
+
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/process_result.rb')
 
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/analytics_websites_report.rb')
@@ -95,7 +100,7 @@ class Worker
   end
 
   def register_actor_pools
-    Celluloid::Actor[:google_api_client] = Handlers::GoogleAnalytics::ApiClient.pool(size: 10)
+    Celluloid::Actor['GoogleAnalytics::ApiClient'.tableize.singularize.to_sym] = Handlers::GoogleAnalytics::ApiClient.pool(size: 10)
     Celluloid::Actor[:result_saver] = Handlers::ResultSaver.pool(size: 10)
   end
 
@@ -103,7 +108,7 @@ class Worker
     symbol_name = task.handler.tableize.singularize.to_sym
     return Celluloid::Actor[symbol_name] if Celluloid::Actor[symbol_name].alive? unless Celluloid::Actor[symbol_name].nil?
 
-    Celluloid::Actor[symbol_name] = Handlers.const_get(task.handler).new
+    Celluloid::Actor[symbol_name] = Handlers.const_get(task.handler).pool
   end
 
   def process(task)

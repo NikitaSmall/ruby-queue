@@ -45,7 +45,7 @@ module Handlers
 
       def profiles(webproperties)
         api_method = analytics.management.profiles.list
-        params = { accountId: '~all', webPropertyId: '~all', fields: 'items(name,webPropertyId,id)'  }
+        params = { accountId: '~all', webPropertyId: '~all', fields: 'items(name,webPropertyId,id)' }
         response = request_api{ @api.execute api_method, params }
         response['items'].map do |item|
           item.update('industryVertical' => webproperties.fetch(item.delete('webPropertyId'), 'UNSPECIFIED'))

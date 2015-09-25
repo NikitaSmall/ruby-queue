@@ -9,6 +9,8 @@ module Handlers
         self.analytics_access_token = @darkwing_user.analytics_access_token
         self.analytics_refresh_token = @darkwing_user.analytics_refresh_token
         self.analytics_token_issued_at = Time.parse(@darkwing_user.analytics_token_issued_at)
+
+        @api = ApiFactory.new.analytics_api(self)
       end
 
       def webproperties
@@ -29,13 +31,11 @@ module Handlers
 
       private
       def get_webproperties
-        api = ApiFactory.new.analytics_api(self)
-        GoogleAnalytics::AnalyticsWebsitesReport.new(api).fetch_webproperties
+        GoogleAnalytics::AnalyticsWebsitesReport.new(@api).fetch_webproperties
       end
 
       def get_profiles(webproperties)
-        api = ApiFactory.new.analytics_api(self)
-        GoogleAnalytics::AnalyticsWebsitesReport.new(api).fetch_profiles(webproperties)
+        GoogleAnalytics::AnalyticsWebsitesReport.new(@api).fetch_profiles(webproperties)
       end
     end
   end

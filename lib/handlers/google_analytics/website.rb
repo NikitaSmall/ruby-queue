@@ -4,24 +4,33 @@ module Handlers
   module GoogleAnalytics
     class Website
       include Celluloid
+      TOKEN_LIFETIME = 3600
 
       def run(task)
         options = JSON::load(task.argument) # expect that arguments stored as json hash
 
         user = get_user(options["user_id"])
-        webproperties = user.webproperties
-        # мы одсуждали, что все запросы к API должны выполняться отдельным атором (причем все запросы к одному сервису одним и тем же)
-        # этот актор должен только подготовить  API запрос (включая данные для аутентификации)
-        # передачу этой задачи не стоит делать через базу
+        options["api"] = { application_name: ENV['GOOGLE_APP_NAME'], application_version: '1.0.0' }.to_json
 
-        options["webproperties"] = webproperties.to_json
+        options["api_authorization"] = { token_credential_uri: URI.parse('https://accounts.google.com/o/oauth2/token'),
+        authorization_uri: URI.parse('https://accounts.google.com/o/oauth2/auth'),
+        client_id: ENV['ADWORDS_CLIENT_ID'],
+        client_secret: ENV['ADWORDS_CLIENT_SECRET'],
+        access_token: user.analytics_access_token,
+        refresh_token: user.analytics_refresh_token,
+        issued_at: user.analytics_token_issued_at,
+        expires_in: TOKEN_LIFETIME,
+        client_customer_id: ENV['ADWORDS_CLIENT_CUSTOMER_ID'] }.to_json
 
-        create_task_get_profiles(options, task.new_materialized_path)
+        task.argument = options.to_json
+        run_task_get_webproperties(task)
       end
 
       private
-      def create_task_get_profiles(options, materialized_path)
-        ::Task.create(handler: 'GoogleAnalytics::GetProfiles', argument: options.to_json, materialized_path: materialized_path, channel: options["channel"])
+      def run_task_get_webproperties(task)
+        Celluloid::Actor['GoogleAnalytics::WebpropertiesRequestPreparer'.tableize.singularize.to_sym] = Handlers::GoogleAnalytics::WebpropertiesRequestPreparer.new
+        Celluloid::Actor['GoogleAnalytics::WebpropertiesRequestPreparer'.tableize.singularize.to_sym].run task
+        # ::Task.create(handler: 'GoogleAnalytics::WebpropertiesGetter', argument: options.to_json, materialized_path: materialized_path, channel: options["channel"])
       end
 
       def users
