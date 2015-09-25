@@ -43,7 +43,7 @@ describe Worker do
     end
   end
 
-  describe '#processing' do
+  describe '#process' do
     before(:each) do
       DatabaseCleaner.strategy = :truncation
       @worker = Worker.new('localhost', PORT)
@@ -53,8 +53,8 @@ describe Worker do
       create_task(handler: 'devider')
       message = @worker.send(:ask_for_task)
 
-      @worker.send(:parse, message)
-      @worker.send(:processing)
+      task = @worker.send(:parse, message)
+      @worker.send(:process, task)
 
       expect(@worker.task).to eq(nil)
       expect(Task.last.status).to eq('done')

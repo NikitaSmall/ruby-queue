@@ -5,7 +5,9 @@ module Handlers
     class ProcessResult
       include Celluloid
 
-      def run(options, task)
+      def run(task)
+        options = JSON::load(task.argument) # expect that arguments stored as json hash
+
         profiles = JSON::parse options["profiles"]
 
         value_to_save = []
@@ -24,7 +26,7 @@ module Handlers
       def create_task_save_results(options, materialized_path)
         # не стоит прогонять этот таск через БД. повторить обработку уже полученного АПИ ответа для нас дешевая операция,
         # а сохранение в базу этого ответа -- большие накладные расходы
-        ::Task.create(handler: 'ResultSaver', argument: options.to_json, materialized_path: materialized_path)
+        ::Task.create(handler: 'ResultSaver', argument: options.to_json, materialized_path: materialized_path, channel: options["channel"])
       end
     end
   end

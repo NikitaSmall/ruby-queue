@@ -2,10 +2,11 @@ require 'celluloid/current'
 
 module Handlers
   class ResultSaver
-    # Имя класса должно быть существительным
     include Celluloid
 
-    def run(options, task)
+    def run(task)
+      options = JSON::load(task.argument) # expect that arguments stored as json hash
+
       value_to_save = JSON::parse options["value_to_save"]
       objects = save(options["model"], value_to_save)
 
@@ -29,7 +30,7 @@ module Handlers
     end
 
     def create_task_save_results(options, materialized_path)
-      ::Task.create(handler: 'ResultSaver', argument: options.to_json, materialized_path: materialized_path)
+      ::Task.create(handler: 'ResultSaver', argument: options.to_json, materialized_path: materialized_path, channel: options["channel"])
     end
 
     def save_user_to_website_relation(options, objects, task)

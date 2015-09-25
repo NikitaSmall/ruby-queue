@@ -46,11 +46,11 @@ end
 desc "namespace to start worker"
 namespace :worker do
   desc "start to asking a server to get tasks"
-  task :start, [:host, :port] do |task, args|
+  task :start, [:host, :port, :logfile] do |task, args|
     Dotenv.load
 
-    args.with_defaults(host: 'localhost', port: 3000)
-    Worker.new(args[:host], args[:port]).listen_for_task
+    args.with_defaults(host: 'localhost', port: 3000, logfile: 'logs/logfile.log')
+    Worker.new(args[:host], args[:port], args[:logfile]).listen_for_task
   end
 end
 

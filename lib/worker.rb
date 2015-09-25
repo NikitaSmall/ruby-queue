@@ -7,7 +7,8 @@ require 'retriable'
 require File.join(File.dirname(__FILE__), 'model/task.rb')
 require File.join(File.dirname(__FILE__), 'model/darkwing_stubs.rb')
 
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/website_report.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/website.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/api_client.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/get_profiles.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/process_result.rb')
 
@@ -15,7 +16,7 @@ require File.join(File.dirname(__FILE__), 'handlers/google_analytics/analytics_w
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/user.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/errors.rb')
 
-require File.join(File.dirname(__FILE__), 'handlers/save_result.rb')
+require File.join(File.dirname(__FILE__), 'handlers/result_saver.rb')
 
 require File.join(File.dirname(__FILE__), 'handlers/api_factory.rb')
 
@@ -27,20 +28,19 @@ class Worker
   attr_accessor :task, :host, :port
   TIME_TO_IDLE = 10 # seconds wait for a new task or server restoring (if an error was occured)
 
-  def initialize(host, port)
+  def initialize(host, port, logfile = 'logs/logfile.log')
     @task = nil
     @host = host
     @port = port
 
-    @logger_to_file = Logger.new('logs/logfile.log')
-    # Путь к файлу должен быть конфигурируемым
+    @logger_to_file = Logger.new(logfile)
+
+    register_actor_pools
   end
 
   def listen_for_task
     log "worker started"
     loop do
-      # message = ask_for_task
-
       if task = next_task
         process task
       else
@@ -94,23 +94,28 @@ class Worker
     end
   end
 
+  def register_actor_pools
+    Celluloid::Actor[:google_api_client] = Handlers::GoogleAnalytics::ApiClient.pool(size: 10)
+    Celluloid::Actor[:result_saver] = Handlers::ResultSaver.pool(size: 10)
+  end
+
+  def find_actor_pool(task)
+    symbol_name = task.handler.tableize.singularize.to_sym
+    return Celluloid::Actor[symbol_name] if Celluloid::Actor[symbol_name].alive? unless Celluloid::Actor[symbol_name].nil?
+
+    Celluloid::Actor[symbol_name] = Handlers.const_get(task.handler).new
+  end
+
   def process(task)
     log "processing started"
 
     # start doing the task with handler
     begin
       Retriable.retriable do
-        options = JSON::load(task.argument) # expect that arguments stored as json hash
-        # Управление агрументами ответсвенность задачи и должна быть помещена в нее
-
-        pool = Handlers.const_get(task.handler).pool
-        pool.run(options, task)
-        # 1. от веркера должны быть скрыты эти детали реализации. Все сообшения должны передаваться через  Celluloid::Actor[:...]
-        # 2. ты каждый раз создаешь новый пулл. Т.е. ты создаешь пулл из N = number of cores потоков и скармливаешь им одну задачу. И так для каждой задачи
-
+        find_actor_pool(task).run task
       end
     rescue => e
-      log "#{e.class}: '#{e.message}' - Error on task processing. Handler: #{@task.handler}; Arguments: #{@task.argument}", :error
+      log "#{e.class}: '#{e.message}' - Error on task processing. Handler: #{task.handler}; Arguments: #{task.argument}", :error
       task.failed(e)
       task = nil
       return # can't do something with this task after retries. So, it moves to next task

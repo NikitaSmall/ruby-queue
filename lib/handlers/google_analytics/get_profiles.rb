@@ -5,7 +5,9 @@ module Handlers
     class GetProfiles
       include Celluloid
 
-      def run(options, task)
+      def run(task)
+        options = JSON::load(task.argument) # expect that arguments stored as json hash
+
         user = get_user(options["user_id"])
         # В БД за данными пользователя нужно ходить только один раз
         # все данные для авторизации этот актор должен получить  качетсве аргументов
@@ -17,7 +19,7 @@ module Handlers
 
       private
       def create_task_process_result(options, materialized_path)
-        ::Task.create(handler: 'GoogleAnalytics::ProcessResult', argument: options.to_json, materialized_path: materialized_path)
+        ::Task.create(handler: 'GoogleAnalytics::ProcessResult', argument: options.to_json, materialized_path: materialized_path, channel: options["channel"])
       end
 
       def users
