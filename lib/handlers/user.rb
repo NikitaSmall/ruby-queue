@@ -1,5 +1,6 @@
 module Handlers
   class User
+    # Этот пользователь относится исключительно к google analytics. Почему он не в неймспейсе?
     attr_accessor :analytics_access_token, :analytics_refresh_token, :analytics_token_issued_at, :darkwing_user_id
 
     def initialize(darkwing_user_id)

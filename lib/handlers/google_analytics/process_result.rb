@@ -22,6 +22,8 @@ module Handlers
 
       private
       def create_task_save_results(options, materialized_path)
+        # не стоит прогонять этот таск через БД. повторить обработку уже полученного АПИ ответа для нас дешевая операция,
+        # а сохранение в базу этого ответа -- большие накладные расходы
         ::Task.create(handler: 'SaveResult', argument: options.to_json, materialized_path: materialized_path)
       end
     end

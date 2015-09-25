@@ -32,17 +32,27 @@ class Worker
     @port = port
 
     @logger_to_file = Logger.new('logs/logfile.log')
+    # Путь к файлу должен быть конфигурируемым
     @logger_to_console = Logger.new(STDERR)
+    # Зачем нам второй логгер, для удобства отладки всегда можно указать STDOUT вместо имени файла
   end
 
   def listen_for_task
     log "worker started"
     loop do
       message = ask_for_task
+      # if message = next_task
+      #   process message
+      # end
+      # а уже внутри next_task проверяем получил мы задачу, или none
+      # next_task возвращает либо Task, либо nil
 
       if message_is_task? message
         parse message
         processing
+        # processing -- имя для состояния, а не для метода
+        # имя метода должно быть глаголом
+
       else
         wait_for_task
       end
@@ -78,7 +88,9 @@ class Worker
   def parse(message)
     begin
       hash = JSON::parse(message)
+
       @task = ::Task.new(hash)
+      # Зачем делать задачу частью состояния worker-а? Задача вполне может предаваться в качестве аргумента между методами
 
       log "task parsed : #{@task.to_s}", :debug
     rescue => e
@@ -89,13 +101,19 @@ class Worker
   def processing
     log "processing started"
     return unless @task.is_a? Task
+    # Лишняя проверка -- это не часть публичного API, т.е. сюда может попасть только Task instance
+
     # start doing the task with handler
     begin
       Retriable.retriable do
         options = JSON::load(@task.argument) # expect that arguments stored as json hash
+        # Управление агрументами ответсвенность задачи и должна быть помещена в нее
 
         pool = Handlers.const_get(@task.handler).pool
         pool.run(options, @task)
+        # 1. от веркера должны быть скрыты эти детали реализации. Все сообшения должны передаваться через  Celluloid::Actor[:...]
+        # 2. ты каждый раз создаешь новый пулл. Т.е. ты создаешь пулл из N = number of cores потоков и скармливаешь им одну задачу. И так для каждой задачи
+
       end
     rescue => e
       log "#{e.class}: '#{e.message}' - Error on task processing. Handler: #{@task.handler}; Arguments: #{@task.argument}", :error

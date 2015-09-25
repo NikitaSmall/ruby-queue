@@ -2,6 +2,7 @@ require 'celluloid/current'
 
 module Handlers
   class SaveResult
+    # Имя класса должно быть существительным
     include Celluloid
 
     def run(options, task)

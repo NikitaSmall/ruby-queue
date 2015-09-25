@@ -7,6 +7,8 @@ module Handlers
 
       def run(options, task)
         user = get_user(options["user_id"])
+        # В БД за данными пользователя нужно ходить только один раз
+        # все данные для авторизации этот актор должен получить  качетсве аргументов
         profiles = user.profiles(JSON::parse(options["webproperties"]) )
         options["profiles"] = profiles.to_json
 

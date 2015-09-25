@@ -1,4 +1,5 @@
 module Handlers
+  # ошибки относятся только к ГА. Почему они не в неймспейсе?
   class GaError < Exception
     def initialize(error)
       @error = error
