@@ -2,8 +2,7 @@ require 'celluloid/current'
 
 module Handlers
   module GoogleAnalytics
-    class WebsiteReport
-      # Я понимаю, что суффикс Report тяжелое наследие vault, но от него нужно избавляться
+    class Website
       include Celluloid
 
       def run(options, task)
@@ -29,7 +28,7 @@ module Handlers
       end
 
       def get_user(user_id)
-        users[user_id] ||= Handlers::User.new(user_id)
+        users[user_id] ||= Handlers::GoogleAnalytics::User.new(user_id)
       end
     end
   end

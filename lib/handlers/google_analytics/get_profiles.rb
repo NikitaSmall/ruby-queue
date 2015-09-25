@@ -25,7 +25,7 @@ module Handlers
       end
 
       def get_user(user_id)
-        users[user_id] ||= Handlers::User.new(user_id)
+        users[user_id] ||= Handlers::GoogleAnalytics::User.new(user_id)
       end
     end
   end

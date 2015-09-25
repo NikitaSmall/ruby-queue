@@ -12,9 +12,10 @@ require File.join(File.dirname(__FILE__), 'handlers/google_analytics/get_profile
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/process_result.rb')
 
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/analytics_websites_report.rb')
-require File.join(File.dirname(__FILE__), 'handlers/user.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/user.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/errors.rb')
+
 require File.join(File.dirname(__FILE__), 'handlers/save_result.rb')
-require File.join(File.dirname(__FILE__), 'handlers/ga_errors.rb')
 
 require File.join(File.dirname(__FILE__), 'handlers/api_factory.rb')
 
@@ -33,26 +34,15 @@ class Worker
 
     @logger_to_file = Logger.new('logs/logfile.log')
     # Путь к файлу должен быть конфигурируемым
-    @logger_to_console = Logger.new(STDERR)
-    # Зачем нам второй логгер, для удобства отладки всегда можно указать STDOUT вместо имени файла
   end
 
   def listen_for_task
     log "worker started"
     loop do
-      message = ask_for_task
-      # if message = next_task
-      #   process message
-      # end
-      # а уже внутри next_task проверяем получил мы задачу, или none
-      # next_task возвращает либо Task, либо nil
+      # message = ask_for_task
 
-      if message_is_task? message
-        parse message
-        processing
-        # processing -- имя для состояния, а не для метода
-        # имя метода должно быть глаголом
-
+      if task = next_task
+        process task
       else
         wait_for_task
       end
@@ -60,6 +50,12 @@ class Worker
   end
 
   private
+  def next_task
+    message = ask_for_task
+    return parse(message) if message_is_task? message
+    nil
+  end
+
   def ask_for_task
     begin
       log "ask for task from server: #{@host}:#{@port}", :debug
@@ -89,36 +85,34 @@ class Worker
     begin
       hash = JSON::parse(message)
 
-      @task = ::Task.new(hash)
-      # Зачем делать задачу частью состояния worker-а? Задача вполне может предаваться в качестве аргумента между методами
+      task = ::Task.new(hash)
 
-      log "task parsed : #{@task.to_s}", :debug
+      log "task parsed : #{task.to_s}", :debug
+      task
     rescue => e
-      log "#{e.class}: '#{e.message}' - Error on task parsing/task saving. Parsed hash is: #{hash}", :error
+      log "#{e.class}: '#{e.message}' - Error on task parsing. Parsed hash is: #{hash}", :error
     end
   end
 
-  def processing
+  def process(task)
     log "processing started"
-    return unless @task.is_a? Task
-    # Лишняя проверка -- это не часть публичного API, т.е. сюда может попасть только Task instance
 
     # start doing the task with handler
     begin
       Retriable.retriable do
-        options = JSON::load(@task.argument) # expect that arguments stored as json hash
+        options = JSON::load(task.argument) # expect that arguments stored as json hash
         # Управление агрументами ответсвенность задачи и должна быть помещена в нее
 
-        pool = Handlers.const_get(@task.handler).pool
-        pool.run(options, @task)
+        pool = Handlers.const_get(task.handler).pool
+        pool.run(options, task)
         # 1. от веркера должны быть скрыты эти детали реализации. Все сообшения должны передаваться через  Celluloid::Actor[:...]
         # 2. ты каждый раз создаешь новый пулл. Т.е. ты создаешь пулл из N = number of cores потоков и скармливаешь им одну задачу. И так для каждой задачи
 
       end
     rescue => e
       log "#{e.class}: '#{e.message}' - Error on task processing. Handler: #{@task.handler}; Arguments: #{@task.argument}", :error
-      @task.failed(e)
-      @task = nil
+      task.failed(e)
+      task = nil
       return # can't do something with this task after retries. So, it moves to next task
     end
 
@@ -126,10 +120,10 @@ class Worker
   end
 
   def done_work
-    log "task is complete"
+    log "worker finished task"
 
-    # @task.finished
-    @task = nil
+    # task.finished
+    # task = nil
   end
 
   def wait_for_task
@@ -144,10 +138,10 @@ class Worker
     case level
     when :info
       @logger_to_file.info { message }
-      @logger_to_console.info { message }
+      STDERR.puts  'INFO: '  + message
     when :error
       @logger_to_file.error { message }
-      @logger_to_console.error { message }
+      STDERR.puts  'ERROR: '  + message
     else
       @logger_to_file.debug { message }
     end

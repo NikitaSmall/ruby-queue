@@ -1,7 +1,7 @@
 require 'celluloid/current'
 
 module Handlers
-  class SaveResult
+  class ResultSaver
     # Имя класса должно быть существительным
     include Celluloid
 
@@ -29,7 +29,7 @@ module Handlers
     end
 
     def create_task_save_results(options, materialized_path)
-      ::Task.create(handler: 'SaveResult', argument: options.to_json, materialized_path: materialized_path)
+      ::Task.create(handler: 'ResultSaver', argument: options.to_json, materialized_path: materialized_path)
     end
 
     def save_user_to_website_relation(options, objects, task)

@@ -64,8 +64,8 @@ module Handlers
 
           reason = body['error']["errors"][0]['reason'] rescue nil
 
-          raise AuthError.new(body['error']) if reason == 'authError'
-          raise NoProfilesFound.new(body['error']) if reason == "insufficientPermissions"
+          raise GoogleAnalytics::AuthError.new(body['error']) if reason == 'authError'
+          raise GoogleAnalytics::NoProfilesFound.new(body['error']) if reason == "insufficientPermissions"
           raise Exception.new("Daily limits: #{body}") if reason == "dailyLimitExceeded"
 
           STDERR.puts "That's OK, we catch this error, just debug #{response.inspect}"
@@ -75,7 +75,7 @@ module Handlers
         end
 
         if ga_error
-          raise ::Handlers::MaxRetriesTimeoutError,
+          raise ::Handlers::GoogleAnalytics::MaxRetriesTimeoutError,
             "Report failed to return within the time limit set by max timeout (#{timeout}).\n
             headers: #{response.response_headers}\n body: response.body"
         end
