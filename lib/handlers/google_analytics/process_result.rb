@@ -20,17 +20,11 @@ module Handlers
 
         task.argument = options.to_json
         run_task_save_results(task)
-        #create_task_save_results(options, task.new_materialized_path) # save websites to database
-        # task.finished
       end
 
       private
       def run_task_save_results(task)
         Celluloid::Actor[:result_saver].run task
-      end
-
-      def create_task_save_results(options, materialized_path)
-        ::Task.create(handler: 'ResultSaver', argument: options.to_json, materialized_path: materialized_path, channel: options["channel"])
       end
     end
   end

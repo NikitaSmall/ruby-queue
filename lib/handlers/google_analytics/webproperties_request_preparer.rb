@@ -20,11 +20,6 @@ module Handlers
       def run_task_request_for_webproperties(task)
         Celluloid::Actor['GoogleAnalytics::ApiClient'.tableize.singularize.to_sym].run task
       end
-
-      def create_task_get_profiles(task)
-        ::Task.create(handler: 'GoogleAnalytics::ProfilesGetter', argument: options.to_json, materialized_path: materialized_path, channel: options["channel"])
-      end
-
     end
   end
 end

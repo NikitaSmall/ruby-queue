@@ -17,10 +17,6 @@ module Handlers
       end
 
       private
-      def create_task_process_result(options, materialized_path)
-        ::Task.create(handler: 'GoogleAnalytics::ProcessResult', argument: options.to_json, materialized_path: materialized_path, channel: options["channel"])
-      end
-
       def run_task_request_for_profiles(task)
         Celluloid::Actor['GoogleAnalytics::ApiClient'.tableize.singularize.to_sym].run task
       end

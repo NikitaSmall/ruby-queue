@@ -32,10 +32,6 @@ module Handlers
         Celluloid::Actor['GoogleAnalytics::WebpropertiesRequestPreparer'.tableize.singularize.to_sym].run task
       end
 
-      def create_task_get_webproperties(options, materialized_path, channel)
-        ::Task.create(handler: 'GoogleAnalytics::WebpropertiesGetter', argument: options.to_json, materialized_path: materialized_path, channel: channel)
-      end
-
       def users
         @users ||= {}
       end
