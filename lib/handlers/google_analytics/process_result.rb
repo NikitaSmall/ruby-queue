@@ -18,14 +18,18 @@ module Handlers
         options["value_to_save"] = value_to_save.to_json
         options["model"] = 'Website'
 
-        create_task_save_results(options, task.new_materialized_path) # save websites to database
+        task.argument = options.to_json
+        run_task_save_results(task)
+        #create_task_save_results(options, task.new_materialized_path) # save websites to database
         # task.finished
       end
 
       private
+      def run_task_save_results(task)
+        Celluloid::Actor[:result_saver].run task
+      end
+
       def create_task_save_results(options, materialized_path)
-        # не стоит прогонять этот таск через БД. повторить обработку уже полученного АПИ ответа для нас дешевая операция,
-        # а сохранение в базу этого ответа -- большие накладные расходы
         ::Task.create(handler: 'ResultSaver', argument: options.to_json, materialized_path: materialized_path, channel: options["channel"])
       end
     end
