@@ -10,9 +10,8 @@ module Handlers
 
         profiles = JSON::parse options["profiles"]
 
-        value_to_save = []
-        profiles.each do |profile|
-          value_to_save << { "name" => profile["name"], "external_id" => profile['id'], "industry" => profile['industryVertical'] }
+        value_to_save = profiles.map do |profile|
+          { "name" => profile["name"], "external_id" => profile['id'], "industry" => profile['industryVertical'] }
         end
 
         options["value_to_save"] = value_to_save.to_json

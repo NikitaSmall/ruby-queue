@@ -37,9 +37,8 @@ module Handlers
       options["model"] = 'UsersWebsite'
       website_ids = objects.map { |website| website.id }
 
-      value_to_save = []
-      website_ids.each do |id|
-        value_to_save << { "user_id" => options["user_id"], "website_id" => id }
+      value_to_save = website_ids.map do |id|
+        { "user_id" => options["user_id"], "website_id" => id }
       end
 
       options["value_to_save"] = value_to_save.to_json

@@ -9,7 +9,7 @@ module Handlers
         options = JSON::load(task.argument) # expect that arguments stored as json hash
 
         options["params"] = { accountId: '~all', fields: 'items(id,industryVertical)' }.to_json
-        options["target_handler"] = 'GoogleAnalytics::WebpropertiesParser'
+        options["target_handler"] = 'GoogleAnalytics::WebpropertiesParser' # next handler after request to api
         options["category_name"] = 'webproperties'
 
         task.argument = options.to_json

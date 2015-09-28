@@ -13,8 +13,8 @@ module Handlers
 
         api = get_api(JSON::parse(options["api"]), JSON::parse(options["api_authorization"]))
         api_method = get_api_method(api, options)
-        params = JSON::load(options["params"])
 
+        params = JSON::load(options["params"])
         response = request_api { api.execute(api_method, params) }
         options["response"] = response.to_json
 
@@ -26,10 +26,6 @@ module Handlers
       def run_task_for_request_parsing(task, destination)
         Celluloid::Actor[destination.tableize.singularize.to_sym] = Handlers.const_get(destination).new
         Celluloid::Actor[destination.tableize.singularize.to_sym].run task
-      end
-
-      def create_task_process_result(options, materialized_path)
-        ::Task.create(handler: 'GoogleAnalytics::ProcessResult', argument: options.to_json, materialized_path: materialized_path, channel: options["channel"])
       end
 
       def get_api(api, api_authorization)
@@ -45,7 +41,7 @@ module Handlers
 
       def get_api_method(api, options)
         category_name = options["category_name"]
-        analytics(api).management.send(category_name).list
+        analytics(api).management.send(category_name).list # list of webproperties or profiles
       end
 
       def request_api(&block)
