@@ -6,7 +6,7 @@ module Handlers
       include Celluloid
 
       def run(task)
-        options = JSON::load(task.argument) # expect that arguments stored as json hash
+        options = task.argument
         response = JSON::load(options["response"])
 
         webproperties = JSON::load(options["webproperties"])
@@ -21,7 +21,7 @@ module Handlers
 
       private
       def create_task_process_result(options, materialized_path, channel)
-        ::Task.create(handler: 'GoogleAnalytics::ProcessResult', argument: options.to_json, materialized_path: materialized_path, channel: channel)
+        ::Task.create(handler: GoogleAnalytics::ProcessResult.name, argument: options.to_json, materialized_path: materialized_path, channel: channel)
       end
     end
   end

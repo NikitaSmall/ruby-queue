@@ -4,6 +4,10 @@ class Task < ActiveRecord::Base
   after_create :serve_materialized_path
   after_update :check_for_complete
 
+  def argument
+    JSON::load(self[:argument])
+  end
+
   def doing
     Task.update(id, attempts: attempts + 1, status: "doing")
   end

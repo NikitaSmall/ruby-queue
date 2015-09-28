@@ -9,13 +9,12 @@ module Handlers
       MAX_TIMEOUT = 64
 
       def run(task)
-        options = JSON::load(task.argument) # expect that arguments stored as json hash
+        options = task.argument
 
-        api = get_api(JSON::parse(options["api"]), JSON::parse(options["api_authorization"]))
-        api_method = get_api_method(api, options)
+        api = api(JSON::parse(options["api"]), JSON::parse(options["api_authorization"]))
 
         params = JSON::load(options["params"])
-        response = request_api { api.execute(api_method, params) }
+        response = request_api { api.execute(api_method(api, options), params) }
         options["response"] = response.to_json
 
         task.argument = options.to_json
@@ -23,12 +22,16 @@ module Handlers
       end
 
       private
-      def run_task_for_request_parsing(task, destination)
-        Celluloid::Actor[destination.tableize.singularize.to_sym] = Handlers.const_get(destination).new
-        Celluloid::Actor[destination.tableize.singularize.to_sym].run task
+      def actor_name(klass)
+        klass.tableize.singularize.to_sym
       end
 
-      def get_api(api, api_authorization)
+      def run_task_for_request_parsing(task, destination)
+        Celluloid::Actor[actor_name destination] = Handlers.const_get(destination).new
+        Celluloid::Actor[actor_name destination].run task
+      end
+
+      def api(api, api_authorization)
         client = Google::APIClient.new(api)
         client.authorization = Signet::OAuth2::Client.new(api_authorization)
 
@@ -36,10 +39,10 @@ module Handlers
       end
 
       def analytics(api)
-        @analytics ||=  ApiFactory.new.discover_google_api(api, 'analytics', 'v3')
+        ApiFactory.new.discover_google_api(api, 'analytics', 'v3')
       end
 
-      def get_api_method(api, options)
+      def api_method(api, options)
         category_name = options["category_name"]
         analytics(api).management.send(category_name).list # list of webproperties or profiles
       end

@@ -7,36 +7,34 @@ module Handlers
       TOKEN_LIFETIME = 3600
 
       def run(task)
-        options = JSON::load(task.argument) # expect that arguments stored as json hash
+        options = task.argument
 
-        user = get_user(options["user_id"])
-
-        options["api"] = get_api_hash.to_json
-        options["api_authorization"] = get_api_auth_hash(user).to_json
+        options["api"] = api_hash.to_json
+        options["api_authorization"] = api_auth_hash(user(options["user_id"])).to_json
 
         task.argument = options.to_json
         run_task_get_webproperties(task)
       end
 
       private
+      def actor_name(klass)
+        klass.name.tableize.singularize.to_sym
+      end
+
       def run_task_get_webproperties(task)
-        Celluloid::Actor['GoogleAnalytics::WebpropertiesRequestPreparer'.tableize.singularize.to_sym] = Handlers::GoogleAnalytics::WebpropertiesRequestPreparer.new
-        Celluloid::Actor['GoogleAnalytics::WebpropertiesRequestPreparer'.tableize.singularize.to_sym].run task
+        Celluloid::Actor[actor_name GoogleAnalytics::WebpropertiesRequestPreparer] = Handlers::GoogleAnalytics::WebpropertiesRequestPreparer.new
+        Celluloid::Actor[actor_name GoogleAnalytics::WebpropertiesRequestPreparer].run task
       end
 
-      def users
-        @users ||= {}
+      def user(user_id)
+        Handlers::GoogleAnalytics::User.new(user_id)
       end
 
-      def get_user(user_id)
-        users[user_id] ||= Handlers::GoogleAnalytics::User.new(user_id)
-      end
-
-      def get_api_hash
+      def api_hash
         { application_name: ENV['GOOGLE_APP_NAME'], application_version: '1.0.0' }
       end
 
-      def get_api_auth_hash(user)
+      def api_auth_hash(user)
         { token_credential_uri: URI.parse('https://accounts.google.com/o/oauth2/token'),
         authorization_uri: URI.parse('https://accounts.google.com/o/oauth2/auth'),
         client_id: ENV['ADWORDS_CLIENT_ID'],

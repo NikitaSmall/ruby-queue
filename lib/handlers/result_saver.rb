@@ -5,7 +5,7 @@ module Handlers
     include Celluloid
 
     def run(task)
-      options = JSON::load(task.argument) # expect that arguments stored as json hash
+      options = task.argument # expect that arguments stored as json hash
 
       value_to_save = JSON::parse options["value_to_save"]
       objects = save(options["model"], value_to_save)
@@ -24,7 +24,7 @@ module Handlers
       rescue ActiveRecord::RecordNotUnique # it should be a Website model!
         websites = Website.where(external_id: value_to_save.map { |website| website["external_id"] }).to_a
         websites.each do |website|
-          Website.update(website.id, value_to_save.select { |val| val["external_id"].to_i == website.external_id }.first)
+          Website.update(website.id, value_to_save.find { |val| val["external_id"].to_i == website.external_id })
         end
       end
     end

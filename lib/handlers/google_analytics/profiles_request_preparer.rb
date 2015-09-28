@@ -6,10 +6,10 @@ module Handlers
       include Celluloid
 
       def run(task)
-        options = JSON::load(task.argument) # expect that arguments stored as json hash
+        options = task.argument
 
         options["params"] = { accountId: '~all', webPropertyId: '~all', fields: 'items(name,webPropertyId,id)'  }.to_json
-        options["target_handler"] = 'GoogleAnalytics::ProfilesParser' # next handler after request to api
+        options["target_handler"] = GoogleAnalytics::ProfilesParser.name # next handler after request to api
         options["category_name"] = 'profiles'
 
         task.argument = options.to_json
@@ -17,8 +17,12 @@ module Handlers
       end
 
       private
+      def actor_name(klass)
+        klass.name.tableize.singularize.to_sym
+      end
+
       def run_task_request_for_profiles(task)
-        Celluloid::Actor['GoogleAnalytics::ApiClient'.tableize.singularize.to_sym].run task
+        Celluloid::Actor[actor_name GoogleAnalytics::ApiClient].run task
       end
     end
   end

@@ -97,7 +97,7 @@ class Worker
   end
 
   def register_actor_pools
-    Celluloid::Actor['GoogleAnalytics::ApiClient'.tableize.singularize.to_sym] = Handlers::GoogleAnalytics::ApiClient.pool(size: 10)
+    Celluloid::Actor[Handlers::GoogleAnalytics::ApiClient.name.tableize.singularize.to_sym] = Handlers::GoogleAnalytics::ApiClient.pool(size: 10)
     Celluloid::Actor[:result_saver] = Handlers::ResultSaver.pool(size: 10)
   end
 

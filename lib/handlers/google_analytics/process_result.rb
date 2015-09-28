@@ -6,7 +6,7 @@ module Handlers
       include Celluloid
 
       def run(task)
-        options = JSON::load(task.argument) # expect that arguments stored as json hash
+        options = task.argument
 
         profiles = JSON::parse options["profiles"]
 
