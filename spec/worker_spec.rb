@@ -20,10 +20,10 @@ describe Worker do
       message = File.read(File.join(File.dirname(__FILE__), 'support/broker_start_serve_last_task.json'))
       expect(@worker.send(:message_is_task?, message)).to be(true)
 
-      @worker.send(:parse, message)
+      task = @worker.send(:parse, message)
 
-      expect(@worker.task).to be_a(Task)
-      expect(@worker.task.id).to eq(Task.first.id)
+      expect(task).to be_a(Task)
+      expect(task.id).to eq(Task.first.id)
     end
   end
 

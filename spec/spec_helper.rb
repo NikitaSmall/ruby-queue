@@ -15,7 +15,7 @@ PORT = 7010
 logger = Logger.new('logs/logfile.log')
 
 RSpec.configure do |config|
-  ActiveRecord::Base.establish_connection adapter: "postgresql", database: "queue_test", username: "root", password: "toor", host: 'localhost'
+  ActiveRecord::Base.establish_connection adapter: "postgresql", database: "queue_test", username: "root", password: "toor", host: 'localhost', pool: 10
   ActiveRecord::Migrator.up(File.join(File.dirname(__FILE__), '../db/migrate'), ENV['VERSION'] ? ENV['VERSION'].to_i : nil )
 
   config.include FactoryGirl::Syntax::Methods

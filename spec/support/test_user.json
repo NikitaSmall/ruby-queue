@@ -1,1 +1,1 @@
-{"id":9,"priority":0,"handler":"analytics","argument":"{\"user_id\":8662,\"report_types\":\"Website\"}","channel":null,"status":"doing","attempts":1,"last_error":null,"failed_at":null,"parent_task_id":null,"created_at":"2015-09-04T08:28:36.281Z","updated_at":"2015-09-04T08:28:36.294Z"}
+{"id":9,"priority":0,"handler":"Website","argument":"{\"user_id\":8662,\"report_types\":\"Website\"}","channel":null,"status":"doing","attempts":1,"last_error":null,"failed_at":null,"parent_task_id":null,"created_at":"2015-09-04T08:28:36.281Z","updated_at":"2015-09-04T08:28:36.294Z"}

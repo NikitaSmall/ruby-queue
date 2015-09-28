@@ -27,12 +27,12 @@ describe Worker do
     end
 
     it 'represents correct serialized task' do
-      create_task(handler: 'devider')
+      create_task(handler: 'ResultSaver')
 
       message = @worker.send(:ask_for_task)
-      @worker.send(:parse, message)
+      task = @worker.send(:parse, message)
 
-      expect(@worker.task.id).to eq(Task.last.id)
+      expect(task.id).to eq(Task.last.id)
     end
 
     it 'fires an error when connection refuse' do
@@ -50,22 +50,21 @@ describe Worker do
     end
 
     it 'correctly process for a correct task' do
-      create_task(handler: 'devider')
+      create_task(JSON::parse(File.read(File.join(File.dirname(__FILE__), '../support/broker_start_serve_last_task.json'))))
       message = @worker.send(:ask_for_task)
 
       task = @worker.send(:parse, message)
       @worker.send(:process, task)
 
-      expect(@worker.task).to eq(nil)
       expect(Task.last.status).to eq('done')
     end
 
     it 'fires error on process for an invalid task' do
-      create_task(handler: 'devider', argument: '{"a": 20, "b": 0}')
+      create_task(handler: 'ResultSaver', argument: '{"a": 20, "b": 0}')
       message = @worker.send(:ask_for_task)
 
-      @worker.send(:parse, message)
-      @worker.send(:processing)
+      task = @worker.send(:parse, message)
+      @worker.send(:process, task)
 
       expect(@worker.task).to eq(nil)
       expect(Task.last.status).to eq('failed')
