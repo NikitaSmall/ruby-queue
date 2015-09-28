@@ -4,6 +4,7 @@ module Handlers
   module GoogleAnalytics
     class WebpropertiesParser
       include Celluloid
+      include Handlers::ActorHelper
 
       def run(task)
         options = task.argument
@@ -14,12 +15,14 @@ module Handlers
         }
 
         options["webproperties"] = webproperties.to_json
-        create_task_get_profiles(options, task.new_materialized_path, task.channel)
+        task.argument = options.to_json
+        run_task_get_profiles(task)
       end
 
       private
-      def create_task_get_profiles(options, materialized_path, channel)
-        ::Task.create(handler: GoogleAnalytics::ProfilesRequestPreparer.name, argument: options.to_json, materialized_path: materialized_path, channel: channel)
+      def run_task_get_profiles(task)
+        Celluloid::Actor[actor_name GoogleAnalytics::ProfilesRequestPreparer] = GoogleAnalytics::ProfilesRequestPreparer.new
+        Celluloid::Actor[actor_name GoogleAnalytics::ProfilesRequestPreparer].run task
       end
     end
   end

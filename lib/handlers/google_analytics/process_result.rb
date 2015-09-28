@@ -4,6 +4,7 @@ module Handlers
   module GoogleAnalytics
     class ProcessResult
       include Celluloid
+      include Handlers::ActorHelper
 
       def run(task)
         options = task.argument

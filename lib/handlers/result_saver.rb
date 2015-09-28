@@ -5,7 +5,7 @@ module Handlers
     include Celluloid
 
     def run(task)
-      options = task.argument # expect that arguments stored as json hash
+      options = task.argument
 
       value_to_save = JSON::parse options["value_to_save"]
       objects = save(options["model"], value_to_save)
@@ -29,8 +29,8 @@ module Handlers
       end
     end
 
-    def create_task_save_results(options, materialized_path)
-      ::Task.create(handler: 'ResultSaver', argument: options.to_json, materialized_path: materialized_path, channel: options["channel"])
+    def run_task_save_results(task)
+      Celluloid::Actor[:result_saver].run task
     end
 
     def save_user_to_website_relation(options, objects, task)
@@ -42,7 +42,8 @@ module Handlers
       end
 
       options["value_to_save"] = value_to_save.to_json
-      create_task_save_results(options, task.new_materialized_path)
+      task.argument = options.to_json
+      run_task_save_results(task)
     end
   end
 end

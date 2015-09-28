@@ -4,6 +4,8 @@ module Handlers
   module GoogleAnalytics
     class Website
       include Celluloid
+      include Handlers::ActorHelper
+      
       TOKEN_LIFETIME = 3600
 
       def run(task)
@@ -17,9 +19,6 @@ module Handlers
       end
 
       private
-      def actor_name(klass)
-        klass.name.tableize.singularize.to_sym
-      end
 
       def run_task_get_webproperties(task)
         Celluloid::Actor[actor_name GoogleAnalytics::WebpropertiesRequestPreparer] = Handlers::GoogleAnalytics::WebpropertiesRequestPreparer.new

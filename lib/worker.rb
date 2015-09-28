@@ -7,6 +7,10 @@ require 'retriable'
 require File.join(File.dirname(__FILE__), 'model/task.rb')
 require File.join(File.dirname(__FILE__), 'model/darkwing_stubs.rb')
 
+require File.join(File.dirname(__FILE__), 'handlers/result_saver.rb')
+require File.join(File.dirname(__FILE__), 'handlers/api_factory.rb')
+require File.join(File.dirname(__FILE__), 'handlers/actor_helper.rb')
+
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/website.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/api_client.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/process_result.rb')
@@ -18,9 +22,6 @@ require File.join(File.dirname(__FILE__), 'handlers/google_analytics/webproperti
 
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/user.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/errors.rb')
-
-require File.join(File.dirname(__FILE__), 'handlers/result_saver.rb')
-require File.join(File.dirname(__FILE__), 'handlers/api_factory.rb')
 
 APP_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '../'))
 REDUCER_KEY_DELIMITER = '#_#_'

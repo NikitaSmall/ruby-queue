@@ -4,6 +4,7 @@ module Handlers
   module GoogleAnalytics
     class WebpropertiesRequestPreparer
       include Celluloid
+      include Handlers::ActorHelper
 
       def run(task)
         options = task.argument
@@ -17,10 +18,6 @@ module Handlers
       end
 
       private
-      def actor_name(klass)
-        klass.name.tableize.singularize.to_sym
-      end
-
       def run_task_request_for_webproperties(task)
         Celluloid::Actor[actor_name GoogleAnalytics::ApiClient].run task
       end
