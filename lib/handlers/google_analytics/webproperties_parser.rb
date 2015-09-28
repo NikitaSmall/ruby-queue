@@ -8,13 +8,12 @@ module Handlers
 
       def run(task)
         options = task.argument
-        response = JSON::load(options["response"])
+        response = options["response"]
 
-        webproperties = response['items'].inject({}) { |memo, item|
+        options["webproperties"] = response['items'].inject({}) { |memo, item|
           memo.update(item['id'] => item.fetch('industryVertical', 'UNSPECIFIED'))
         }
 
-        options["webproperties"] = webproperties.to_json
         task.argument = options.to_json
         run_task_get_profiles(task)
       end

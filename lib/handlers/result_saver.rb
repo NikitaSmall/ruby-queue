@@ -7,8 +7,7 @@ module Handlers
     def run(task)
       options = task.argument
 
-      value_to_save = JSON::parse options["value_to_save"]
-      objects = save(options["model"], value_to_save)
+      objects = save(options["model"], options["value_to_save"])
 
       if options["model"] == 'Website'
         save_user_to_website_relation(options, objects, task)
@@ -37,11 +36,10 @@ module Handlers
       options["model"] = 'UsersWebsite'
       website_ids = objects.map { |website| website.id }
 
-      value_to_save = website_ids.map do |id|
+      options["value_to_save"] = website_ids.map do |id|
         { "user_id" => options["user_id"], "website_id" => id }
       end
 
-      options["value_to_save"] = value_to_save.to_json
       task.argument = options.to_json
       run_task_save_results(task)
     end

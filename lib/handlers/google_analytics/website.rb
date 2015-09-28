@@ -5,14 +5,14 @@ module Handlers
     class Website
       include Celluloid
       include Handlers::ActorHelper
-      
+
       TOKEN_LIFETIME = 3600
 
       def run(task)
         options = task.argument
 
-        options["api"] = api_hash.to_json
-        options["api_authorization"] = api_auth_hash(user(options["user_id"])).to_json
+        options["api"] = api_hash
+        options["api_authorization"] = api_auth_hash(user(options["user_id"]))
 
         task.argument = options.to_json
         run_task_get_webproperties(task)

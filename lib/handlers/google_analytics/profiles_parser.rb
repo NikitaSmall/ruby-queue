@@ -8,15 +8,13 @@ module Handlers
 
       def run(task)
         options = task.argument
-        response = JSON::load(options["response"])
+        
+        response = options["response"]
+        webproperties = options["webproperties"]
 
-        webproperties = JSON::load(options["webproperties"])
-
-        profiles = response['items'].map do |item|
+        options["profiles"] = response['items'].map do |item|
           item.update('industryVertical' => webproperties.fetch(item.delete('webPropertyId'), 'UNSPECIFIED'))
         end
-
-        options["profiles"] = profiles.to_json
 
         task.argument = options.to_json
         run_task_process_result(task)

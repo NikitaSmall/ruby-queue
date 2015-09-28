@@ -11,11 +11,11 @@ module Handlers
       def run(task)
         options = task.argument
 
-        api = api(JSON::parse(options["api"]), JSON::parse(options["api_authorization"]))
+        api = api(options["api"], options["api_authorization"])
 
-        params = JSON::load(options["params"])
+        params = options["params"]
         response = request_api { api.execute(api_method(api, options), params) }
-        options["response"] = response.to_json
+        options["response"] = response
 
         task.argument = options.to_json
         run_task_for_request_parsing(task, options["target_handler"])

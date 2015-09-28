@@ -9,7 +9,7 @@ module Handlers
       def run(task)
         options = task.argument
 
-        options["params"] = { accountId: '~all', fields: 'items(id,industryVertical)' }.to_json
+        options["params"] = { accountId: '~all', fields: 'items(id,industryVertical)' }
         options["target_handler"] = GoogleAnalytics::WebpropertiesParser.name # next handler after request to api
         options["category_name"] = 'webproperties'
 
