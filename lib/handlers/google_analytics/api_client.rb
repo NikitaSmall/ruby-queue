@@ -43,6 +43,8 @@ module Handlers
       end
 
       def api_method(api, options)
+        return analytics(api).data.ga.get if options["category_name"] == "locations"
+
         category_name = options["category_name"]
         analytics(api).management.send(category_name).list # list of webproperties or profiles
       end

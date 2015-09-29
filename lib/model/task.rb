@@ -5,7 +5,7 @@ class Task < ActiveRecord::Base
   after_update :check_for_complete
 
   def argument
-    JSON::load(self[:argument])
+    JSON::load(self[:argument].gsub('=>', ':').gsub('nil', 'null'))
   end
 
   def doing

@@ -7,13 +7,12 @@ module Handlers
     def run(task)
       options = task.argument
 
-      objects = save(options["model"], options["value_to_save"])
-
-      if options["model"] == 'Website'
-        save_user_to_website_relation(options, objects, task)
-      else
-        task.finished
+      options["value_to_save"].each do |value_to_save|
+        value_to_save["id"] = save(options["model"], options["value_to_save"])
       end
+
+      task.argument = options.to_json
+      run_task_for_procced_processing(task, options["target_handler"])
     end
 
     private
@@ -23,25 +22,19 @@ module Handlers
       rescue ActiveRecord::RecordNotUnique # it should be a Website model!
         websites = Website.where(external_id: value_to_save.map { |website| website["external_id"] }).to_a
         websites.each do |website|
-          Website.update(website.id, value_to_save.find { |val| val["external_id"].to_i == website.external_id })
+          value = value_to_save.find { |val| val["external_id"].to_i == website.external_id }
+          Website.update(website.id, name: value["name"], industry: value["industry"])
         end
       end
     end
 
-    def run_task_save_results(task)
-      Celluloid::Actor[:result_saver].run task
+    def actor_name(klass)
+      klass.tableize.singularize.to_sym
     end
 
-    def save_user_to_website_relation(options, objects, task)
-      options["model"] = 'UsersWebsite'
-      website_ids = objects.map { |website| website.id }
-
-      options["value_to_save"] = website_ids.map do |id|
-        { "user_id" => options["user_id"], "website_id" => id }
-      end
-
-      task.argument = options.to_json
-      run_task_save_results(task)
+    def run_task_for_procced_processing(task, destination)
+      Celluloid::Actor[actor_name destination] = Handlers.const_get(destination).new
+      Celluloid::Actor[actor_name destination].run task
     end
   end
 end

@@ -60,13 +60,12 @@ describe Worker do
     end
 
     it 'fires error on process for an invalid task' do
-      create_task(handler: 'ResultSaver', argument: '{"a": 20, "b": 0}')
+      create_task(handler: 'ResultSaver', argument: {"a" => 20, "b" => 0}.to_json)
       message = @worker.send(:ask_for_task)
 
       task = @worker.send(:parse, message)
       @worker.send(:process, task)
 
-      expect(@worker.task).to eq(nil)
       expect(Task.last.status).to eq('failed')
     end
   end
