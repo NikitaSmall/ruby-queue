@@ -5,7 +5,9 @@ module Handlers
     include Celluloid
 
     def run(task)
+      options = task.argument
       task.finished
     end
+
   end
 end

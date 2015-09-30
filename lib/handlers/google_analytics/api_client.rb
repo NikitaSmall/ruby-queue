@@ -35,6 +35,8 @@ module Handlers
         client = Google::APIClient.new(api)
         client.authorization = Signet::OAuth2::Client.new(api_authorization)
 
+        token = client.authorization.fetch_access_token!
+
         client
       end
 

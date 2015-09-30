@@ -16,6 +16,9 @@ module Handlers
           item.update('industryVertical' => webproperties.fetch(item.delete('webPropertyId'), 'UNSPECIFIED'))
         end
 
+        options.delete("response")
+        options.delete("webproperties")
+
         task.argument = options.to_json
         run_task_process_result(task)
 

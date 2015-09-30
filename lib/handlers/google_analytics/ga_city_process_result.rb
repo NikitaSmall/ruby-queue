@@ -2,7 +2,7 @@ require 'celluloid/current'
 
 module Handlers
   module GoogleAnalytics
-    class GaRegionProcessResult
+    class GaCityProcessResult
       include Celluloid
       include Handlers::ActorHelper
 
@@ -13,8 +13,8 @@ module Handlers
         options["location_report_rows"].each_with_index do |row, index|
           value_to_save << {
             "name" => row["ga:city"],
-            "latitude" => row['latitude'],
-            "longitude" => row['longitude'],
+            "latitude" => row['ga:latitude'],
+            "longitude" => row['ga:longitude'],
             "external_id" => row['ga:cityId'],
             "ga_region_id" => options["value_to_save"][index]["id"]
           }

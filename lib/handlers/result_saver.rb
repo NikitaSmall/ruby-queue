@@ -8,7 +8,7 @@ module Handlers
       options = task.argument
 
       options["value_to_save"].each do |value_to_save|
-        value_to_save["id"] = save(options["model"], options["value_to_save"])
+        value_to_save["id"] = save(options["model"], value_to_save)
       end
 
       task.argument = options.to_json
@@ -18,13 +18,10 @@ module Handlers
     private
     def save(model, value_to_save)
       begin
-        Object.const_get(model).create(value_to_save)
+        Object.const_get(model).create(value_to_save).id
       rescue ActiveRecord::RecordNotUnique # it should be a Website model!
-        websites = Website.where(external_id: value_to_save.map { |website| website["external_id"] }).to_a
-        websites.each do |website|
-          value = value_to_save.find { |val| val["external_id"].to_i == website.external_id }
-          Website.update(website.id, name: value["name"], industry: value["industry"])
-        end
+        Website.where(external_id: value_to_save["external_id"].to_i).update_all(name: value_to_save["name"], industry: value_to_save["industry"])
+        nil
       end
     end
 
@@ -33,6 +30,8 @@ module Handlers
     end
 
     def run_task_for_procced_processing(task, destination)
+      return task.finished if destination.nil?
+      
       Celluloid::Actor[actor_name destination] = Handlers.const_get(destination).new
       Celluloid::Actor[actor_name destination].run task
     end
