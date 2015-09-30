@@ -19,6 +19,7 @@ module Handlers
           run_task_request_for_locations(task) # to catch all the results
         end
 
+        task.argument = options.to_json
         run_task_location_report_parser(task)
       end
 

@@ -12,19 +12,23 @@ module Handlers
 
         unless response.nil?
           options["location_report_rows"] = response["rows"].map do |row|
-            make_hash(options["headers"], row)
+            make_hash(headers(response), row)
           end
 
           task.argument = options.to_json
           run_task_process_result(task)
         end
-        # p 'response is nil'
+        # p 'response or headers are nil'
       end
 
       private
       def run_task_process_result(task)
         Celluloid::Actor[actor_name GoogleAnalytics::GaRegionProcessResult] = GoogleAnalytics::GaRegionProcessResult.new
         Celluloid::Actor[actor_name GoogleAnalytics::GaRegionProcessResult].run task
+      end
+
+      def headers(response)
+        response['columnHeaders'].map { |header| header["name"] }
       end
 
       def make_hash(headers, row)

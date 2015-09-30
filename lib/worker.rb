@@ -11,6 +11,7 @@ require File.join(File.dirname(__FILE__), 'handlers/actor_helper.rb')
 require File.join(File.dirname(__FILE__), 'handlers/result_saver.rb')
 require File.join(File.dirname(__FILE__), 'handlers/api_factory.rb')
 require File.join(File.dirname(__FILE__), 'handlers/ender.rb')
+require File.join(File.dirname(__FILE__), 'handlers/task.rb')
 
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/website.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/api_client.rb')
@@ -97,7 +98,7 @@ class Worker
     begin
       hash = JSON::parse(message)
 
-      task = ::Task.new(hash)
+      task = Handlers::Task.new(hash)
 
       log "task parsed : #{task.to_s}", :debug
       task

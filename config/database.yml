@@ -1,7 +1,7 @@
 adapter: postgresql
 encoding: utf8
 database: queue_dev
-pool: 15
+pool: 5
 username: rails
 password: rails
 host: localhost

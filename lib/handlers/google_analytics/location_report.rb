@@ -9,7 +9,7 @@ module Handlers
       def run(task)
         options = task.argument
         options["start_index"] ||= 1
-
+        
         options["params"] = query(options["start_date"], options["end_date"], options["start_index"], options["profile"]["id"])
         options["target_handler"] = GoogleAnalytics::LocationReportPaginator.name
         options["category_name"] = 'locations'
