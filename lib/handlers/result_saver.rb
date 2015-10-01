@@ -23,8 +23,12 @@ module Handlers
       begin
         Object.const_get(model).create(value_to_save).id
       rescue ActiveRecord::RecordNotUnique # it should be a Website model!
-        Website.where(external_id: value_to_save["external_id"].to_i).update_all(name: value_to_save["name"], industry: value_to_save["industry"])
-        nil
+        if model == 'Website'
+          Website.where(external_id: value_to_save["external_id"].to_i).update_all(name: value_to_save["name"], industry: value_to_save["industry"])
+          nil
+        else
+          Object.const_get(model).where(value_to_save).first.id 
+        end
       end
     end
 

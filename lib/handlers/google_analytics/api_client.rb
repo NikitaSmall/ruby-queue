@@ -44,8 +44,12 @@ module Handlers
         ApiFactory.new.discover_google_api(api, 'analytics', 'v3')
       end
 
+      def google_analytics_reports
+        ["locations", "mobile", "top_report"]
+      end
+
       def api_method(api, options)
-        return analytics(api).data.ga.get if ["locations", "mobile"].include? options["category_name"]
+        return analytics(api).data.ga.get if google_analytics_reports.include? options["category_name"]
 
         category_name = options["category_name"]
         analytics(api).management.send(category_name).list # list of webproperties or profiles

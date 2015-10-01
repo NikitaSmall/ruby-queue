@@ -2,8 +2,8 @@ require 'celluloid/current'
 
 module Handlers
   module GoogleAnalytics
-    module MobileReport
-      class MobileReportParser
+    module TopContentReport
+      class TopContentReportParser
         include Celluloid
         include Handlers::ActorHelper
 
@@ -12,7 +12,7 @@ module Handlers
           response = options.delete("response")
 
           unless response["rows"].nil?
-            options["mobile_report_rows"] = response["rows"].map do |row|
+            options["top_report_report_rows"] = response["rows"].map do |row|
               make_hash(options['headers'], row)
             end
 
@@ -23,8 +23,8 @@ module Handlers
 
         private
         def run_task_process_result(task)
-          Celluloid::Actor[actor_name GoogleAnalytics::MobileReport::MobileReportProcessResult] = GoogleAnalytics::MobileReport::MobileReportProcessResult.new
-          Celluloid::Actor[actor_name GoogleAnalytics::MobileReport::MobileReportProcessResult].run task
+          Celluloid::Actor[actor_name GoogleAnalytics::TopContentReport::ContentPageProcessResult] = GoogleAnalytics::TopContentReport::ContentPageProcessResult.new
+          Celluloid::Actor[actor_name GoogleAnalytics::TopContentReport::ContentPageProcessResult].run task
         end
 
         def headers(response)
