@@ -30,6 +30,11 @@ require File.join(File.dirname(__FILE__), 'handlers/google_analytics/ga_region_p
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/ga_city_process_result.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/location_report_process_result.rb')
 
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/mobile_report.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/mobile_report_paginator.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/mobile_report_parser.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/mobile_report_process_result.rb')
+
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/user.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/errors.rb')
 

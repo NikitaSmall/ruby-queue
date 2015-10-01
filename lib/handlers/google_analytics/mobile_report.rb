@@ -2,27 +2,17 @@ require 'celluloid/current'
 
 module Handlers
   module GoogleAnalytics
-    class LocationReport
+    class MobileReport
       include Celluloid
       include Handlers::ActorHelper
 
       METRICS = %w(
-                ga:sessions
-                ga:newUsers
-                ga:pageviews
-                ga:sessionDuration
-                ga:bounces
-                )
+                   ga:pageviews
+                  )
       DIMENSIONS = %w(
                   ga:date
-                  ga:countryIsoCode
-                  ga:region
-                  ga:city
-                  ga:cityId
-                  ga:latitude
-                  ga:longitude
+                  ga:deviceCategory
                      )
-      FILTERS = ["ga:subContinent==Northern America"]
 
       def metrics
         METRICS
@@ -33,7 +23,7 @@ module Handlers
       end
 
       def filters
-        FILTERS
+        []
       end
 
       def run(task)
@@ -41,15 +31,15 @@ module Handlers
         options["start_index"] ||= 1
 
         options["params"] = query(options["start_date"], options["end_date"], options["start_index"], options["profile"]["id"])
-        options["target_handler"] = GoogleAnalytics::LocationReportPaginator.name
-        options["category_name"] = 'locations'
+        options["target_handler"] = GoogleAnalytics::MobileReportPaginator.name
+        options["category_name"] = 'mobile'
 
         task.argument = options.to_json
-        run_task_request_for_locations(task)
+        run_task_request_for_mobile_report(task)
       end
 
       private
-      def run_task_request_for_locations(task)
+      def run_task_request_for_mobile_report(task)
         Celluloid::Actor[actor_name GoogleAnalytics::ApiClient].run task
       end
 
