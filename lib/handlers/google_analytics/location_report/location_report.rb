@@ -25,23 +25,11 @@ module Handlers
                        )
         FILTERS = ["ga:subContinent==Northern America"]
 
-        def metrics
-          METRICS
-        end
-
-        def dimensions
-          DIMENSIONS
-        end
-
-        def filters
-          FILTERS
-        end
-
         def run(task)
           options = task.argument
           options["start_index"] ||= 1
 
-          options["params"] = query(options["start_date"], options["end_date"], options["start_index"], options["profile"]["id"])
+          options["params"] = query_params(options["start_date"], options["end_date"], options["start_index"], options["profile"]["id"])
           options["target_handler"] = GoogleAnalytics::LocationReport::LocationReportPaginator.name
           options["category_name"] = 'locations'
 
@@ -54,7 +42,7 @@ module Handlers
           Celluloid::Actor[actor_name GoogleAnalytics::ApiClient].run task
         end
 
-        def query(start_date, end_date, start_index=1, profile_id)
+        def query_params(start_date, end_date, start_index=1, profile_id)
           {
               'ids' => 'ga:' + profile_id,
               'start-date' => start_date.to_s,

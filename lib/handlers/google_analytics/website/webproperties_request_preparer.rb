@@ -20,7 +20,7 @@ module Handlers
 
         private
         def run_task_request_for_webproperties(task)
-          Celluloid::Actor[actor_name GoogleAnalytics::ApiClient].run task
+          Celluloid::Actor[actor_name GoogleAnalytics::ManagementApiClient].run task
         end
       end
     end

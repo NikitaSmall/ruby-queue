@@ -14,6 +14,7 @@ require File.join(File.dirname(__FILE__), 'handlers/ender.rb')
 require File.join(File.dirname(__FILE__), 'handlers/task.rb')
 
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/api_client.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/management_api_client.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/user.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/errors.rb')
 
@@ -119,6 +120,7 @@ class Worker
 
   def register_actor_pools
     Celluloid::Actor[Handlers::GoogleAnalytics::ApiClient.name.tableize.singularize.to_sym] = Handlers::GoogleAnalytics::ApiClient.pool(size: 10)
+    Celluloid::Actor[Handlers::GoogleAnalytics::ManagementApiClient.name.tableize.singularize.to_sym] = Handlers::GoogleAnalytics::ManagementApiClient.pool(size: 10)
     Celluloid::Actor[:result_saver] = Handlers::ResultSaver.pool(size: 10)
   end
 

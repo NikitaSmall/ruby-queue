@@ -11,7 +11,7 @@ module Handlers
           options = task.argument
 
           value_to_save = []
-          options["top_report_report_rows"].each_with_index do |row, index|
+          options.delete("top_report_report_rows").each_with_index do |row, index|
             value_to_save << {
               "website_id" => options["profile"]["id"],
               "date" => row['ga:date'],
@@ -23,8 +23,7 @@ module Handlers
               "bounce_rate" => row['ga:bounces'],
               "content_page_id" => options["value_to_save"][index]["id"]
              }
-          end
-          options.delete("top_report_report_rows")
+          end          
 
           options["value_to_save"] = value_to_save
           options["model"] = 'TopContentReport'

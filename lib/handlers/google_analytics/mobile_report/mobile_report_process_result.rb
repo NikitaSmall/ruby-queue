@@ -11,15 +11,14 @@ module Handlers
           options = task.argument
 
           value_to_save = []
-          options["mobile_report_rows"].each_with_index do |row, index|
+          options.delete("mobile_report_rows").each_with_index do |row, index|
             value_to_save << {
               "website_id" => options["profile"]["id"],
               "date" => row['ga:date'],
               "visits" => row['ga:pageviews'],
               "device" => row['ga:deviceCategory']
              }
-          end
-          options.delete("mobile_report_rows")
+          end          
 
           options["value_to_save"] = value_to_save
           options["model"] = 'MobileReport'

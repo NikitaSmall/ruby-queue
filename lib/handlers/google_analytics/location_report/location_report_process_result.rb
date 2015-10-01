@@ -11,7 +11,7 @@ module Handlers
           options = task.argument
 
           value_to_save = []
-          options["location_report_rows"].each_with_index do |row, index|
+          options.delete("location_report_rows").each_with_index do |row, index|
             value_to_save << {
               "website_id" => options["profile"]["id"],
               "country" => row['ga:countryIsoCode'],
@@ -25,7 +25,6 @@ module Handlers
               "ga_city_id" => options["value_to_save"][index]["id"]
              }
           end
-          options.delete("location_report_rows")
 
           options["value_to_save"] = value_to_save
           options["model"] = 'LocationReport'
