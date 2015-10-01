@@ -13,30 +13,29 @@ require File.join(File.dirname(__FILE__), 'handlers/api_factory.rb')
 require File.join(File.dirname(__FILE__), 'handlers/ender.rb')
 require File.join(File.dirname(__FILE__), 'handlers/task.rb')
 
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/website.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/api_client.rb')
-
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/profiles_process_result.rb')
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/profiles_request_preparer.rb')
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/profiles_parser.rb')
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/profiles_to_user_process_result.rb')
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/webproperties_request_preparer.rb')
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/webproperties_parser.rb')
-
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/location_report.rb')
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/location_report_paginator.rb')
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/location_report_parser.rb')
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/ga_region_process_result.rb')
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/ga_city_process_result.rb')
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/location_report_process_result.rb')
-
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/mobile_report.rb')
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/mobile_report_paginator.rb')
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/mobile_report_parser.rb')
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/mobile_report_process_result.rb')
-
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/user.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/errors.rb')
+
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/website/website.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/website/profiles_process_result.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/website/profiles_request_preparer.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/website/profiles_parser.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/website/profiles_to_user_process_result.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/website/webproperties_request_preparer.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/website/webproperties_parser.rb')
+
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/location_report/location_report.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/location_report/location_report_paginator.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/location_report/location_report_parser.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/location_report/ga_region_process_result.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/location_report/ga_city_process_result.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/location_report/location_report_process_result.rb')
+
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/mobile_report/mobile_report.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/mobile_report/mobile_report_paginator.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/mobile_report/mobile_report_parser.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/mobile_report/mobile_report_process_result.rb')
 
 APP_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '../'))
 REDUCER_KEY_DELIMITER = '#_#_'
