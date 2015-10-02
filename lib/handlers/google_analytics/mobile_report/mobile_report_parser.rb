@@ -9,7 +9,7 @@ module Handlers
 
         def run(task)
           options = task.argument
-          mobile_report_rows = options.delete("mobile_and_reffering_report_rows").group_by { |row| row["ga:deviceCategory"] }
+          mobile_report_rows = options["mobile_and_reffering_report_rows"].group_by { |row| row["ga:deviceCategory"] }
 
           options["mobile_report_rows"] = []
           mobile_report_rows.each do |deviceCategory, rows|

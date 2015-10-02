@@ -18,6 +18,7 @@ module Handlers
 
             task.argument = options.to_json
             run_task_mobile_report_parser(task)
+            run_task_referring_report_parser(task)
           end
         end
 
@@ -25,6 +26,11 @@ module Handlers
         def run_task_mobile_report_parser(task)
           Celluloid::Actor[actor_name GoogleAnalytics::MobileReport::MobileReportParser] = GoogleAnalytics::MobileReport::MobileReportParser.new
           Celluloid::Actor[actor_name GoogleAnalytics::MobileReport::MobileReportParser].run task
+        end
+
+        def run_task_referring_report_parser(task)
+          Celluloid::Actor[actor_name GoogleAnalytics::ReferringReport::ReferringReportParser] = GoogleAnalytics::ReferringReport::ReferringReportParser.new
+          Celluloid::Actor[actor_name GoogleAnalytics::ReferringReport::ReferringReportParser].run task
         end
 
         def headers(response)
