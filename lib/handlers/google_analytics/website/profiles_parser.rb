@@ -26,9 +26,10 @@ module Handlers
           # create a new task's branch, to LocationReport
           options["profiles"].each do |profile|
             options["profile"] = profile
-            create_task_location_report(options, task.new_materialized_path, task.channel)
-            create_task_mobile_report(options, task.new_materialized_path, task.channel)
-            create_task_to_content_report(options, task.new_materialized_path, task.channel)
+            # create_task_location_report(options, task.new_materialized_path, task.channel)
+            # create_task_mobile_report(options, task.new_materialized_path, task.channel)
+            # create_task_to_content_report(options, task.new_materialized_path, task.channel)
+            create_task_mobile_and_referring_report(options, task.new_materialized_path, task.channel)
           end
         end
 
@@ -40,6 +41,10 @@ module Handlers
 
         def create_task_location_report(options, materialized_path, channel)
           ::Task.create(handler: GoogleAnalytics::LocationReport::LocationReport.name, argument: options.to_json, materialized_path: materialized_path, channel: channel)
+        end
+
+        def create_task_mobile_and_referring_report(options, materialized_path, channel)
+          ::Task.create(handler: GoogleAnalytics::MobileAndReferringReport::MobileAndReferringReport.name, argument: options.to_json, materialized_path: materialized_path, channel: channel)
         end
 
         def create_task_mobile_report(options, materialized_path, channel)

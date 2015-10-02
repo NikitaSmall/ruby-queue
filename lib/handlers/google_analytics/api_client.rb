@@ -14,7 +14,7 @@ module Handlers
         api = api(options["api"], options["api_authorization"])
 
         params = options["params"]
-        response = request_api { api.execute(api_method(api), params) }
+        response = request_api { api.execute(api_method(api, options), params) }
         options["response"] = response
 
         task.argument = options.to_json
@@ -44,7 +44,7 @@ module Handlers
         ApiFactory.new.discover_google_api(api, 'analytics', 'v3')
       end
 
-      def api_method(api)
+      def api_method(api, options)
         analytics(api).data.ga.get
       end
 

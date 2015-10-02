@@ -9,16 +9,18 @@ module Handlers
 
         def run(task)
           options = task.argument
-          response = options.delete("response")
+          mobile_report_rows = options.delete("mobile_and_reffering_report_rows").group_by { |row| row["ga:deviceCategory"] }
 
-          unless response["rows"].nil?
-            options["mobile_report_rows"] = response["rows"].map do |row|
-              make_hash(options['headers'], row)
+          options["mobile_report_rows"] = []
+          mobile_report_rows.each do |deviceCategory, rows|
+            groupped_date_rows = rows.group_by { |row| row["ga:date"] }
+            options["mobile_report_rows"] += groupped_date_rows.map do |date, rows|
+              rows.inject { |hash, el| hash.merge(el) { |key, old_v, new_v| key == "ga:pageviews" ? old_v.to_i + new_v.to_i : old_v }  }
             end
-
-            task.argument = options.to_json
-            run_task_process_result(task)
           end
+
+          task.argument = options.to_json
+          run_task_process_result(task)
         end
 
         private
