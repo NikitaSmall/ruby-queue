@@ -20,7 +20,7 @@ module Handlers
               "pageviews" => row['ga:pageviews'],
               "new_visits" => row['ga:newUsers'],
               "avg_time_on_site" => row['ga:sessionDuration'],
-              "time_on_site" => row['ga:session'],
+              "time_on_site" => row['ga:sessions'].to_f * row['ga:sessionDuration'].to_f,
               "pageviews_per_visit" => row["pageview_per_visit"]
              }
           end

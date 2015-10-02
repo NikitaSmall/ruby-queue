@@ -1,5 +1,7 @@
 module Handlers
   module ActorHelper
+    LOGGER = Logger.new('logs/logfile.log')
+
     def actor_name(klass)
       klass.name.tableize.singularize.to_sym
     end
@@ -32,6 +34,20 @@ module Handlers
 
     def headers(response)
       response['columnHeaders'].map { |header| header["name"] }
+    end
+
+    def log(message, level = :info)
+      message = 'Worker: ' + message
+      case level
+      when :info
+        LOGGER.info { message }
+        STDERR.puts  'INFO: '  + message
+      when :error
+        LOGGER.error { message }
+        STDERR.puts  'ERROR: '  + message
+      else
+        LOGGER.debug { message }
+      end
     end
   end
 end

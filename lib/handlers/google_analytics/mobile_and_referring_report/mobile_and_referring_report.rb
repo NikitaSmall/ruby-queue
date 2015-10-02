@@ -22,6 +22,7 @@ module Handlers
         FILTERS = []
 
         def run(task)
+          log 'MobileAndReferringReport task sequence started'
           options = task.argument
           options["start_index"] ||= 1
 

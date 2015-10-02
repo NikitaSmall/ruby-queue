@@ -8,6 +8,7 @@ module Handlers
         include Handlers::ActorHelper
 
         def run(task)
+          log 'MobileReport task started'
           options = task.argument
           mobile_report_rows = options["mobile_and_reffering_report_rows"].group_by { |row| row["ga:deviceCategory"] }
 

@@ -10,6 +10,7 @@ module Handlers
         TOKEN_LIFETIME = 3600
 
         def run(task)
+          log 'WebsiteReport task sequence started'
           options = task.argument
 
           options["api"] = api_hash

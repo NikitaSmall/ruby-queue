@@ -6,6 +6,7 @@ module Handlers
 
     def run(task)
       options = task.argument
+      message = options["message"]
       task.finished
     end
 

@@ -23,6 +23,7 @@ module Handlers
         FILTERS = []
 
         def run(task)
+          log 'TrafficReport task sequence started'
           options = task.argument
           options["start_index"] ||= 1
 

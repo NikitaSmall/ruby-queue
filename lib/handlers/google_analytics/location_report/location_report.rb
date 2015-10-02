@@ -26,6 +26,7 @@ module Handlers
         FILTERS = ["ga:subContinent==Northern America"]
 
         def run(task)
+          log 'LocationReport task sequence started'
           options = task.argument
           options["start_index"] ||= 1
 

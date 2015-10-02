@@ -8,6 +8,7 @@ module Handlers
         include Handlers::ActorHelper
 
         def run(task)
+          log 'TrafficMetricsReport task started'
           options = task.argument
           traffic_report_rows = options["traffic_report_rows"].group_by { |row| row["ga:date"] }
 

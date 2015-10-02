@@ -27,7 +27,8 @@ module Handlers
           Website.where(external_id: value_to_save["external_id"].to_i).update_all(name: value_to_save["name"], industry: value_to_save["industry"])
           nil
         else
-          Object.const_get(model).where(value_to_save).first.id 
+          obj = Object.const_get(model).where(value_to_save).first
+          obj.id unless obj.nil?
         end
       end
     end

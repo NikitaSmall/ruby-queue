@@ -1,6 +1,6 @@
 module Handlers
   class Task
-    attr_accessor :id, :handler, :argument, :channel, :status, :materialized_path, :attempts
+    attr_accessor :id, :handler, :argument, :channel, :status, :materialized_path, :attempts, :last_error, :failed_at
 
     def initialize(hash)
       @id = hash["id"]
@@ -22,15 +22,21 @@ module Handlers
     end
 
     def doing
-      ::Task.update(@id, attempts: @attempts + 1, status: "doing")
+      self.status = 'doing'
+      self.attempts += 1
+      Celluloid::Actor[:task_manager].run self
     end
 
     def finished
-      ::Task.update(@id, status: "done")
+      self.status = 'done'
+      Celluloid::Actor[:task_manager].run self
     end
 
     def failed(e)
-      ::Task.update(@id, status: "failed", last_error: e.message, failed_at: Time.now)
+      self.last_error = e.message
+      self.failed_at = Time.now
+      self.status = 'failed'
+      Celluloid::Actor[:task_manager].run self
     end
   end
 end
