@@ -2,19 +2,19 @@ require 'celluloid/current'
 
 module Handlers
   module GoogleAnalytics
-    module ReferringReport
-      class ReferringReportParser
+    module TrafficChannelReport
+      class TrafficChannelReportParser
         include Celluloid
         include Handlers::ActorHelper
 
         def run(task)
           options = task.argument
-          reffering_report_rows = options["mobile_and_reffering_report_rows"].group_by { |row| row["ga:source"] }
+          traffic_channel_report_rows = options["traffic_report_rows"].group_by { |row| row["ga:channelGrouping"] }
 
-          options["reffering_report_rows"] = []
-          reffering_report_rows.each do |source, rows|
+          options["traffic_channel_report_rows"] = []
+          traffic_channel_report_rows.each do |channel, rows|
             groupped_date_rows = rows.group_by { |row| row["ga:date"] }
-            options["reffering_report_rows"] += groupped_date_rows.map do |date, rows|
+            options["traffic_channel_report_rows"] += groupped_date_rows.map do |date, rows|
               rows.inject do |hash, el|
                 hash.merge(el) do |key, old_v, new_v|
                   %w(ga:sessions ga:pageviews ga:sessionDuration ga:bounces).include?(key) ? old_v.to_i + new_v.to_i : old_v
@@ -29,8 +29,8 @@ module Handlers
 
         private
         def run_task_process_result(task)
-          Celluloid::Actor[actor_name GoogleAnalytics::ReferringReport::SourceProcessResult] = GoogleAnalytics::ReferringReport::SourceProcessResult.new
-          Celluloid::Actor[actor_name GoogleAnalytics::ReferringReport::SourceProcessResult].run task
+          Celluloid::Actor[actor_name GoogleAnalytics::TrafficChannelReport::TrafficChannelReportProcessResult] = GoogleAnalytics::TrafficChannelReport::TrafficChannelReportProcessResult.new
+          Celluloid::Actor[actor_name GoogleAnalytics::TrafficChannelReport::TrafficChannelReportProcessResult].run task
         end
 
         def headers(response)

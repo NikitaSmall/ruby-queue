@@ -2,8 +2,8 @@ require 'celluloid/current'
 
 module Handlers
   module GoogleAnalytics
-    module MobileAndReferringReport
-      class MobileAndReferringReport
+    module TrafficReport
+      class TrafficReport
         include Celluloid
         include Handlers::ActorHelper
 
@@ -12,11 +12,12 @@ module Handlers
                       ga:pageviews
                       ga:sessionDuration
                       ga:bounces
+                      ga:users
+                      ga:newUsers
                     )
         DIMENSIONS = %w(
-                      ga:date
-                      ga:deviceCategory
-                      ga:source
+                    ga:date
+                    ga:channelGrouping
                        )
 
         FILTERS = []
@@ -26,8 +27,8 @@ module Handlers
           options["start_index"] ||= 1
 
           options["params"] = query_params(options["start_date"], options["end_date"], options["start_index"], options["profile"]["id"])
-          options["target_handler"] = GoogleAnalytics::MobileAndReferringReport::MobileAndReferringReportPaginator.name
-          options["category_name"] = 'mobile_and_referring'
+          options["target_handler"] = GoogleAnalytics::TrafficReport::TrafficReportPaginator.name
+          options["category_name"] = 'traffic'
 
           task.argument = options.to_json
           run_task_request_for_mobile_report(task)

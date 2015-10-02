@@ -23,12 +23,13 @@ module Handlers
           task.argument = options.to_json
           run_task_process_result(task)
 
-          # create a new task's branch, to LocationReport
+          # create a new task's branches
           options["profiles"].each do |profile|
             options["profile"] = profile
             create_task_location_report(options, task.new_materialized_path, task.channel)
             create_task_to_content_report(options, task.new_materialized_path, task.channel)
             create_task_mobile_and_referring_report(options, task.new_materialized_path, task.channel)
+            create_task_traffic_report(options, task.new_materialized_path, task.channel)
           end
         end
 
@@ -36,6 +37,10 @@ module Handlers
         def run_task_process_result(task)
           Celluloid::Actor[actor_name GoogleAnalytics::Website::ProfilesProcessResult] = GoogleAnalytics::Website::ProfilesProcessResult.new
           Celluloid::Actor[actor_name GoogleAnalytics::Website::ProfilesProcessResult].run task
+        end
+
+        def create_task_traffic_report(options, materialized_path, channel)
+          ::Task.create(handler: GoogleAnalytics::TrafficReport::TrafficReport.name, argument: options.to_json, materialized_path: materialized_path, channel: channel)
         end
 
         def create_task_location_report(options, materialized_path, channel)

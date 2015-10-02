@@ -25,6 +25,16 @@ require File.join(File.dirname(__FILE__), 'handlers/google_analytics/location_re
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/location_report/location_report_paginator.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/location_report/location_report.rb')
 
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/traffic_report/traffic_report.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/traffic_report/traffic_report_parser.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/traffic_report/traffic_report_paginator.rb')
+
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/traffic_metrics_report/traffic_metrics_report_process_result.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/traffic_metrics_report/traffic_metrics_report_parser.rb')
+
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/traffic_channel_report/traffic_channel_report_process_result.rb')
+require File.join(File.dirname(__FILE__), 'handlers/google_analytics/traffic_channel_report/traffic_channel_report_parser.rb')
+
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/mobile_and_referring_report/mobile_and_referring_report_parser.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/mobile_and_referring_report/mobile_and_referring_report_paginator.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/mobile_and_referring_report/mobile_and_referring_report.rb')
