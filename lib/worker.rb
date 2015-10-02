@@ -35,8 +35,6 @@ require File.join(File.dirname(__FILE__), 'handlers/google_analytics/referring_r
 
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/mobile_report/mobile_report_process_result.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/mobile_report/mobile_report_parser.rb')
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/mobile_report/mobile_report_paginator.rb')
-require File.join(File.dirname(__FILE__), 'handlers/google_analytics/mobile_report/mobile_report.rb')
 
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/top_content_report/top_content_report_process_result.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/top_content_report/content_pages_process_result.rb')

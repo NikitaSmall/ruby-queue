@@ -18,12 +18,11 @@ module Handlers
               "visits" => row['ga:pageviews'],
               "device" => row['ga:deviceCategory']
              }
-          end          
+          end
 
           options["value_to_save"] = value_to_save
           options["model"] = 'MobileReport'
           options["target_handler"] = nil
-          options["start_actor"] = GoogleAnalytics::MobileReport::MobileReport.name
 
           task.argument = options.to_json
           run_task_save_results(task)
