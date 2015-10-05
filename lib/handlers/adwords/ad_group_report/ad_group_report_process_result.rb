@@ -10,7 +10,7 @@ module Handlers
         def run(task)
           options = task.argument
 
-          options["value_to_save"] = options.delete("ag_groups").map do |row|
+          options["value_to_save"] = options.delete("ad_groups").map do |row|
             { "external_id" => row["id"], "name" => row["name"], "status" => row["status"], "sem_campaign_id" => row["campaign_id"] }
           end
 

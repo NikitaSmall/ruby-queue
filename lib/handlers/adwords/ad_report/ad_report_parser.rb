@@ -2,15 +2,15 @@ require 'celluloid/current'
 
 module Handlers
   module Adwords
-    module AdGroupReport
-      class AdGroupReportParser
+    module AdReport
+      class AdReportParser
         include Celluloid
         include Handlers::ActorHelper
 
         def run(task)
           options = task.argument
 
-          options["ad_groups"] =  options.delete("response")
+          options["ads"] =  options.delete("response")
 
           task.argument = options.to_json
           run_task_process_result task
@@ -18,8 +18,8 @@ module Handlers
 
         private
         def run_task_process_result(task)
-          Celluloid::Actor[actor_name Adwords::AdGroupReport::AdGroupReportProcessResult] = Adwords::AdGroupReport::AdGroupReportProcessResult.new
-          Celluloid::Actor[actor_name Adwords::AdGroupReport::AdGroupReportProcessResult].run task
+          Celluloid::Actor[actor_name Adwords::AdReport::AdReportProcessResult] = Adwords::AdReport::AdReportProcessResult.new
+          Celluloid::Actor[actor_name Adwords::AdReport::AdReportProcessResult].run task
         end
 
       end
