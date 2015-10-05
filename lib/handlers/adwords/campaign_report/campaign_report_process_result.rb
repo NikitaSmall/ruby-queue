@@ -25,6 +25,7 @@ module Handlers
           unless options["include_children"] == false
             create_task_ad_group_report(options, task.new_materialized_path, task.channel)
             create_task_ad_report(options, task.new_materialized_path, task.channel)
+            create_task_keywords_report(options, task.new_materialized_path, task.channel)
           end
         end
 
@@ -39,6 +40,10 @@ module Handlers
 
         def create_task_ad_report(options, materialized_path, channel)
           ::Task.create(handler: Adwords::AdReport::AdReport.name, argument: options.to_json, materialized_path: materialized_path, channel: channel)
+        end
+
+        def create_task_keywords_report(options, materialized_path, channel)
+          ::Task.create(handler: Adwords::KeywordReport::KeywordReport.name, argument: options.to_json, materialized_path: materialized_path, channel: channel)
         end
 
       end

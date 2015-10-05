@@ -13,7 +13,7 @@ module Handlers
         ActiveRecord::Base.connection_pool.with_connection { @api = ApiFactory.new.adwords_api options["customer_id"] }
         service = @api.service(options["report_type"].to_sym, API_VERSION)
 
-        options["response"] = service.get(options["fields"].symbolize_keys)[:entries]
+        options["response"] = service.get(options["fields"].deep_symbolize_keys!)[:entries]
 
         task.argument = options.to_json
         run_task_for_request_parsing(task, options["target_handler"])

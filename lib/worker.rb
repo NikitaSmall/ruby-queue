@@ -29,6 +29,10 @@ require File.join(File.dirname(__FILE__), 'handlers/adwords/ad_report/ad_report.
 require File.join(File.dirname(__FILE__), 'handlers/adwords/ad_report/ad_report_parser.rb')
 require File.join(File.dirname(__FILE__), 'handlers/adwords/ad_report/ad_report_process_result.rb')
 
+require File.join(File.dirname(__FILE__), 'handlers/adwords/keyword_report/keyword_report.rb')
+require File.join(File.dirname(__FILE__), 'handlers/adwords/keyword_report/keyword_report_parser.rb')
+require File.join(File.dirname(__FILE__), 'handlers/adwords/keyword_report/keyword_report_process_result.rb')
+
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/api_client.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/management_api_client.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/user.rb')
