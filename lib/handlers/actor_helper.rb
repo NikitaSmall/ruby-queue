@@ -37,7 +37,7 @@ module Handlers
     end
 
     def log(message, level = :info)
-      message = 'Worker: ' + message
+      message = 'Task: ' + message
       case level
       when :info
         LOGGER.info { message }

@@ -10,21 +10,19 @@ module Handlers
         def run(task)
           options = task.argument
 
-          response = options["response"]
-          webproperties = options["webproperties"]
+          response = options.delete("response")
+          webproperties = options.delete("webproperties")
 
           options["profiles"] = response['items'].map do |item|
             item.update('industryVertical' => webproperties.fetch(item.delete('webPropertyId'), 'UNSPECIFIED'))
           end
 
-          options.delete("response")
-          options.delete("webproperties")
-
           task.argument = options.to_json
           run_task_process_result(task)
 
           # create a new task's branches
-          options["profiles"].each do |profile|
+          profiles = options.delete("profiles")
+          profiles.each do |profile|
             options["profile"] = profile
             create_task_location_report(options, task.new_materialized_path, task.channel)
             create_task_to_content_report(options, task.new_materialized_path, task.channel)

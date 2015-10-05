@@ -9,12 +9,11 @@ module Handlers
 
         def run(task)
           options = task.argument
-          response = options["response"]
+          response = options.delete("response")
 
           options["webproperties"] = response['items'].inject({}) { |memo, item|
             memo.update(item['id'] => item.fetch('industryVertical', 'UNSPECIFIED'))
           }
-          options.delete("response")
 
           task.argument = options.to_json
           run_task_get_profiles(task)
