@@ -9,10 +9,17 @@ require File.join(File.dirname(__FILE__), 'model/darkwing_stubs.rb')
 
 require File.join(File.dirname(__FILE__), 'handlers/actor_helper.rb')
 require File.join(File.dirname(__FILE__), 'handlers/result_saver.rb')
+require File.join(File.dirname(__FILE__), 'handlers/database_selector.rb')
 require File.join(File.dirname(__FILE__), 'handlers/api_factory.rb')
 require File.join(File.dirname(__FILE__), 'handlers/ender.rb')
 require File.join(File.dirname(__FILE__), 'handlers/task.rb')
 require File.join(File.dirname(__FILE__), 'handlers/task_manager.rb')
+
+require File.join(File.dirname(__FILE__), 'handlers/adwords/api_client.rb')
+
+require File.join(File.dirname(__FILE__), 'handlers/adwords/campaign_report/campaign_report.rb')
+require File.join(File.dirname(__FILE__), 'handlers/adwords/campaign_report/campaign_report_parser.rb')
+require File.join(File.dirname(__FILE__), 'handlers/adwords/campaign_report/campaign_report_process_result.rb')
 
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/api_client.rb')
 require File.join(File.dirname(__FILE__), 'handlers/google_analytics/management_api_client.rb')
@@ -138,9 +145,14 @@ class Worker
   def register_actor_pools
     Celluloid::Actor[Handlers::GoogleAnalytics::ApiClient.name.tableize.singularize.to_sym] = Handlers::GoogleAnalytics::ApiClient.pool(size: 10)
     Celluloid::Actor[Handlers::GoogleAnalytics::ManagementApiClient.name.tableize.singularize.to_sym] = Handlers::GoogleAnalytics::ManagementApiClient.pool(size: 10)
+
+    Celluloid::Actor[Handlers::Adwords::ApiClient.name.tableize.singularize.to_sym] = Handlers::Adwords::ApiClient.pool(size: 10)
+
     Celluloid::Actor[:result_saver] = Handlers::ResultSaver.pool(size: 5)
-    Celluloid::Actor[:ender] = Handlers::Ender.pool(size: 5)
     Celluloid::Actor[:task_manager] = Handlers::TaskManager.pool(size: 5)
+    Celluloid::Actor[:database_selector] = Handlers::DatabaseSelector.pool(size: 5)
+
+    Celluloid::Actor[:ender] = Handlers::Ender.pool(size: 5)
   end
 
   def find_actor_pool(task)

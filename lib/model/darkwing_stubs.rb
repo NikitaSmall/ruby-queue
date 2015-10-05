@@ -37,7 +37,10 @@ class AdGroup < ActiveRecord::Base; end
 class Ad < ActiveRecord::Base; end
 class Keyword < ActiveRecord::Base; end
 
-class AdwordsCustomer < Customer; end
+class SemManager < ActiveRecord::Base; end
+class AdwordsCustomer < Customer
+  belongs_to :sem_manager
+end
 class AdwordsSemCampaign < SemCampaign; end
 class AdwordsAdGroup < AdGroup; end
 class AdwordsAd < Ad
