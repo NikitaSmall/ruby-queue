@@ -21,8 +21,7 @@ module Handlers
           run_task_process_result(task)
 
           # create a new task's branches
-          profiles = options.delete("profiles")
-          profiles.each do |profile|
+          options.delete("profiles").each do |profile|
             options["profile"] = profile
             create_task_location_report(options, task.new_materialized_path, task.channel)
             create_task_to_content_report(options, task.new_materialized_path, task.channel)
