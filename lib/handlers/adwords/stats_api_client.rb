@@ -1,4 +1,5 @@
 require 'celluloid/current'
+require 'csv'
 
 module Handlers
   module Adwords
@@ -11,7 +12,8 @@ module Handlers
         options = task.argument
 
         ActiveRecord::Base.connection_pool.with_connection { @api = ApiFactory.new.adwords_api options["customer_id"] }
-        options["response"] = @api.report_utils(API_VERSION).download_report report_params(options)
+        response = @api.report_utils(API_VERSION).download_report report_params(options)
+        options["response"] = Zlib::GzipReader.new(StringIO.new(response)).read
 
         task.argument = options.to_json
         run_task_for_request_parsing(task, options["target_handler"])
