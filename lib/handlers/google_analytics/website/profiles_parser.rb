@@ -37,19 +37,19 @@ module Handlers
         end
 
         def create_task_traffic_report(options, materialized_path, channel)
-          ::Task.create(handler: GoogleAnalytics::TrafficReport::TrafficReport.name, argument: options.to_json, materialized_path: materialized_path, channel: channel)
+          ::Task.create(handler: GoogleAnalytics::Traffic::Traffic.name, argument: options.to_json, materialized_path: materialized_path, channel: channel)
         end
 
         def create_task_location_report(options, materialized_path, channel)
-          ::Task.create(handler: GoogleAnalytics::LocationReport::LocationReport.name, argument: options.to_json, materialized_path: materialized_path, channel: channel)
+          ::Task.create(handler: GoogleAnalytics::Location::Location.name, argument: options.to_json, materialized_path: materialized_path, channel: channel)
         end
 
         def create_task_mobile_and_referring_report(options, materialized_path, channel)
-          ::Task.create(handler: GoogleAnalytics::MobileAndReferringReport::MobileAndReferringReport.name, argument: options.to_json, materialized_path: materialized_path, channel: channel)
+          ::Task.create(handler: GoogleAnalytics::MobileAndReferring::MobileAndReferring.name, argument: options.to_json, materialized_path: materialized_path, channel: channel)
         end
 
         def create_task_to_content_report(options, materialized_path, channel)
-          ::Task.create(handler: GoogleAnalytics::TopContentReport::TopContentReport.name, argument: options.to_json, materialized_path: materialized_path, channel: channel)
+          ::Task.create(handler: GoogleAnalytics::TopContent::TopContent.name, argument: options.to_json, materialized_path: materialized_path, channel: channel)
         end
       end
     end
