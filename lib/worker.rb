@@ -22,6 +22,10 @@ require File.join(File.dirname(__FILE__), 'handlers/adwords/keyword_stats/keywor
 require File.join(File.dirname(__FILE__), 'handlers/adwords/keyword_stats/keyword_stats_parser.rb')
 require File.join(File.dirname(__FILE__), 'handlers/adwords/keyword_stats/keyword_stats_process_result.rb')
 
+require File.join(File.dirname(__FILE__), 'handlers/adwords/ad_stats/ad_stats.rb')
+require File.join(File.dirname(__FILE__), 'handlers/adwords/ad_stats/ad_stats_parser.rb')
+require File.join(File.dirname(__FILE__), 'handlers/adwords/ad_stats/ad_stats_process_result.rb')
+
 require File.join(File.dirname(__FILE__), 'handlers/adwords/campaign/campaign.rb')
 require File.join(File.dirname(__FILE__), 'handlers/adwords/campaign/campaign_parser.rb')
 require File.join(File.dirname(__FILE__), 'handlers/adwords/campaign/campaign_process_result.rb')
