@@ -9,10 +9,9 @@ module Handlers
 
         def run(task)
           options = task.argument
-          response = options.delete("response")
 
-          unless response["rows"].nil?
-            options["mobile_and_reffering_report_rows"] = response["rows"].map do |row|
+          unless options["rows"].nil?
+            options["mobile_and_reffering_report_rows"] = options.delete("rows").map do |row|
               make_hash(options['headers'], row)
             end
 

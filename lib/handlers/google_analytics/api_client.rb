@@ -19,6 +19,8 @@ module Handlers
 
         task.argument = options.to_json
         run_task_for_request_parsing(task, options["target_handler"])
+
+        options["response"]
       end
 
       protected
@@ -27,8 +29,10 @@ module Handlers
       end
 
       def run_task_for_request_parsing(task, destination)
-        Celluloid::Actor[actor_name destination] = Handlers.const_get(destination).new
-        Celluloid::Actor[actor_name destination].run task
+        unless destination.nil?
+          Celluloid::Actor[actor_name destination] = Handlers.const_get(destination).new
+          Celluloid::Actor[actor_name destination].run task
+        end
       end
 
       def api(api, api_authorization)

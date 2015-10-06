@@ -22,7 +22,7 @@ module Handlers
 
         private
         def run_task_get_customer_id(task)
-          Celluloid::Actor[:database_selector].run task
+          Celluloid::Actor[:object_selector].run task
         end
 
       end

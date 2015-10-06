@@ -28,6 +28,19 @@ module Handlers
       end
     end
 
+    def wait_for_paginate_report(task, options, totalResults)
+      while options["params"]['start-index'] + ApiFactory::GA_MAX_RESULTS <= totalResults
+        options["params"]['start-index'] += ApiFactory::GA_MAX_RESULTS
+        options["target_handler"] = nil
+
+        task.argument = options.to_json
+        paginated_response = Celluloid::Actor[actor_name GoogleAnalytics::ApiClient].future.run task # wait for every row in ga report
+        options["rows"] += paginated_response.value["rows"]
+      end
+
+      options["rows"]
+    end
+
     def run_task_request(task)
       Celluloid::Actor[actor_name GoogleAnalytics::ApiClient].run task
     end

@@ -1,7 +1,7 @@
 require 'celluloid/current'
 
 module Handlers
-  class DatabaseSelector
+  class ObjectSelector
     include Celluloid
 
     def run(task)

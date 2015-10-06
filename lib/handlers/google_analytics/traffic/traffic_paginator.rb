@@ -9,10 +9,11 @@ module Handlers
 
         def run(task)
           options = task.argument
-          response = options["response"]
+          response = options.delete("response")
           options["headers"] = headers(response)
+          options["rows"] = response["rows"]
 
-          paginate_report(task, options, response["totalResults"], GoogleAnalytics::Traffic::TrafficParser.name)
+          options["rows"] = wait_for_paginate_report(task, options, response["totalResults"])
 
           task.argument = options.to_json
           run_task_mobile_report_parser(task)

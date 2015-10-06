@@ -9,7 +9,7 @@ require File.join(File.dirname(__FILE__), 'model/darkwing_stubs.rb')
 
 require File.join(File.dirname(__FILE__), 'handlers/actor_helper.rb')
 require File.join(File.dirname(__FILE__), 'handlers/result_saver.rb')
-require File.join(File.dirname(__FILE__), 'handlers/database_selector.rb')
+require File.join(File.dirname(__FILE__), 'handlers/object_selector.rb')
 require File.join(File.dirname(__FILE__), 'handlers/api_factory.rb')
 require File.join(File.dirname(__FILE__), 'handlers/ender.rb')
 require File.join(File.dirname(__FILE__), 'handlers/task.rb')
@@ -168,7 +168,7 @@ class Worker
 
     Celluloid::Actor[:result_saver] = Handlers::ResultSaver.pool(size: 5)
     Celluloid::Actor[:task_manager] = Handlers::TaskManager.pool(size: 5)
-    Celluloid::Actor[:database_selector] = Handlers::DatabaseSelector.pool(size: 5)
+    Celluloid::Actor[:object_selector] = Handlers::ObjectSelector.pool(size: 5)
 
     Celluloid::Actor[:ender] = Handlers::Ender.pool(size: 5)
   end
