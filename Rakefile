@@ -36,10 +36,10 @@ namespace :serve do
   desc "simple serve for new tasks"
   task :new, [:port] do |task, args|
     pidfile = PidFile.new(piddir: '/var/lock/', pidfile: 'broker_serve.pid')
-
     args.with_defaults(port: 3000)
+
     broker = Broker.instance
-    broker.start_serve args[:port]
+    broker.start_serve args.port.to_i
   end
 end
 
@@ -50,7 +50,7 @@ namespace :worker do
     Dotenv.load
 
     args.with_defaults(host: 'localhost', port: 3000, logfile: 'logs/logfile.log')
-    Worker.new(args[:host], args[:port], args[:logfile]).listen_for_task
+    Worker.new(args[:host], args[:port].to_i, args[:logfile]).listen_for_task
   end
 end
 
