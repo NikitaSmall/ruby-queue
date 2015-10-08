@@ -7,7 +7,6 @@ module Handlers
     def run(task)
       options = task.argument
 
-
       ActiveRecord::Base.connection_pool.with_connection do
         options["value_to_save"].each do |value_to_save|
           value_to_save["id"] = save(options["model"], value_to_save)

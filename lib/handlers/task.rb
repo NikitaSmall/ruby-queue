@@ -1,6 +1,6 @@
 module Handlers
   class Task
-    attr_accessor :id, :handler, :argument, :channel, :status, :materialized_path, :attempts, :last_error, :failed_at
+    attr_accessor :id, :handler, :argument, :channel, :status, :materialized_path, :attempts, :last_error, :failed_at, :task_incrementer
 
     def initialize(hash)
       @id = hash["id"]
@@ -28,7 +28,14 @@ module Handlers
     end
 
     def finished
+      return if status == 'done'
+
       self.status = 'done'
+      clone = self.dup
+      materialized_path.each do |parent_task_id|
+        clone.argument = { "counter" => "done_sub_task", "id" => parent_task_id }.to_json
+        Celluloid::Actor[:task_incrementer].run clone
+      end
       Celluloid::Actor[:task_manager].run self
     end
 
@@ -36,6 +43,12 @@ module Handlers
       self.last_error = e.message
       self.failed_at = Time.now
       self.status = 'failed'
+
+      clone = self.dup
+      materialized_path.each do |parent_task_id|
+        clone.argument = { "counter" => "failed_sub_task", "id" => parent_task_id }.to_json
+        Celluloid::Actor[:task_incrementer].run clone
+      end
       Celluloid::Actor[:task_manager].run self
     end
   end

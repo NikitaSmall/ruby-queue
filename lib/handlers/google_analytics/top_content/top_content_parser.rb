@@ -11,7 +11,9 @@ module Handlers
           options = task.argument
           response = options.delete("response")
 
-          unless response["rows"].nil?
+          if response["rows"].nil?
+            task.finished
+          else
             options["top_report_report_rows"] = response["rows"].map do |row|
               make_hash(options['headers'], row)
             end

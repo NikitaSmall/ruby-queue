@@ -10,7 +10,9 @@ module Handlers
         def run(task)
           options = task.argument
 
-          unless options["rows"].nil?
+          if options["rows"].nil?
+            task.finished
+          else
             options["traffic_report_rows"] = options.delete("rows").map do |row|
               make_hash(options['headers'], row)
             end

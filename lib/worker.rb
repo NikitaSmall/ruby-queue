@@ -14,6 +14,7 @@ require File.join(File.dirname(__FILE__), 'handlers/api_factory.rb')
 require File.join(File.dirname(__FILE__), 'handlers/ender.rb')
 require File.join(File.dirname(__FILE__), 'handlers/task.rb')
 require File.join(File.dirname(__FILE__), 'handlers/task_manager.rb')
+require File.join(File.dirname(__FILE__), 'handlers/task_incrementer.rb')
 
 require File.join(File.dirname(__FILE__), 'handlers/adwords/api_client.rb')
 require File.join(File.dirname(__FILE__), 'handlers/adwords/stats_api_client.rb')
@@ -171,8 +172,10 @@ class Worker
     Celluloid::Actor[Handlers::Adwords::StatsApiClient.name.tableize.singularize.to_sym] = Handlers::Adwords::StatsApiClient.pool(size: 10)
 
     Celluloid::Actor[:result_saver] = Handlers::ResultSaver.pool(size: 5)
-    Celluloid::Actor[:task_manager] = Handlers::TaskManager.pool(size: 5)
     Celluloid::Actor[:object_selector] = Handlers::ObjectSelector.pool(size: 5)
+    
+    Celluloid::Actor[:task_incrementer] = Handlers::TaskIncrementer.pool
+    Celluloid::Actor[:task_manager] = Handlers::TaskManager.pool
 
     Celluloid::Actor[:ender] = Handlers::Ender.pool(size: 5)
   end
